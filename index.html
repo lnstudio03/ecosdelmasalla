@@ -4,23 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ecos del Más Allá - Día de Muertos</title>
-    <!-- Tipografías de Google Fonts: Una elegante/mística y otra para texto limpio -->
+    
+    <!-- Tipografía mística y clásica estilo gótico/antiguo -->
     <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-    
+    <link href="https://googleapis.com/css2?family=Almendra+SC&family=Cinzel+Decorative:wght@700&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+
     <style>
-        /* --- VARIABLES DE COLORES (Paleta Día de Muertos Pro) --- */
+        /* --- VARIABLES DE DISEÑO --- */
         :root {
-            --cempasuchil: #FF9F00;
-            --cempasuchil-dark: #CC5A01;
-            --morado-misto: #3A0066;
-            --fucsia-papel: #E6007E;
-            --negro-inframundo: #0D0214;
-            --blanco-hueso: #F5EFEB;
+            --oro-cempasuchil: #FFB703;
+            --naranja-profundo: #FB8500;
+            --blanco-humo: #EAE2B7;
+            --negro-penumbra: #050206;
         }
 
-        /* --- CONFIGURACIÓN BASE --- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -28,301 +26,302 @@
         }
 
         body {
-            background-color: var(--negro-inframundo);
-            color: var(--blanco-hueso);
-            font-family: 'Quicksand', sans-serif;
-            overflow-x: hidden;
+            background-color: var(--negro-penumbra);
+            color: var(--blanco-humo);
+            font-family: 'Montserrat', sans-serif;
             min-height: 100vh;
+            overflow-x: hidden;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
         }
 
-        /* Canvas para las partículas del más allá (pétalos y luces) */
-        #canvas-particles {
+        /* --- FONDO ATMOSFÉRICO RECREADO --- */
+        /* Usamos una imagen de altar real y un degradado oscuro encima para simular la penumbra de la foto */
+        .fondo-altar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background: 
+                radial-gradient(circle at center, rgba(5, 2, 6, 0.2) 0%, rgba(5, 2, 6, 0.85) 80%),
+                url('https://unsplash.com') no-repeat center center;
+            background-size: cover;
             z-index: 1;
-            pointer-events: none;
+            filter: saturate(1.1) brightness(0.7);
         }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
-        .container {
-            position: relative;
+        /* --- CAPA INTERACTIVA DE NIEBLA Y HUMO --- */
+        #canvas-humo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 2;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+
+        /* --- CONTENEDOR DE LA INTERFAZ --- */
+        .escena-principal {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            max-width: 1000px;
             text-align: center;
             padding: 2rem;
-            max-width: 800px;
-            width: 90%;
         }
 
-        /* --- TÍTULO SUPER PRO (Efecto Neón Metálico) --- */
-        .titulo-principal {
-            font-family: 'Cinzel Decorative', serif;
-            font-size: 4.5rem;
-            text-transform: uppercase;
-            color: var(--cempasuchil);
-            text-shadow: 
-                0 0 10px var(--cempasuchil),
-                0 0 20px var(--cempasuchil-dark),
-                0 0 40px var(--fucsia-papel);
-            animation: brilloMistico 3s infinite alternate ease-in-out;
-            margin-bottom: 0.5rem;
+        /* --- MARCO INVISIBLE PARA ACOMODAR EL TEXTO EN ARCO --- */
+        .contenedor-titulos {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        /* Título Curvo con CSS avanzado (SVG integrado para imitar perfectamente la forma de la imagen) */
+        .titulo-curvo-svg {
+            width: 100%;
+            max-width: 750px;
+            height: auto;
+            margin: 0 auto;
+            filter: drop-shadow(0px 4px 15px rgba(0, 0, 0, 0.9));
+        }
+
+        .titulo-texto {
+            font-family: 'Almendra SC', serif;
+            font-size: 58px;
+            fill: var(--blanco-humo);
             letter-spacing: 2px;
         }
 
-        .subtitulo {
-            font-size: 1.5rem;
-            color: var(--fucsia-papel);
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 3rem;
-            font-weight: 600;
-            text-shadow: 0 0 8px rgba(230, 0, 126, 0.6);
+        /* Subtítulo arqueado que sigue la silueta inferior */
+        .subtitulo-texto {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            font-size: 13px;
+            fill: #D4CDA7;
+            letter-spacing: 1.5px;
+            word-spacing: 2px;
+            opacity: 0.9;
         }
 
-        /* --- MARCO ESTILO ALTAR --- */
-        .altar-box {
-            background: rgba(58, 0, 102, 0.25);
-            border: 3px solid var(--cempasuchil);
-            border-radius: 20px;
+        /* --- ALTAR INTERACTIVO --- */
+        .altar-centro {
+            background: rgba(13, 7, 18, 0.5);
+            border: 1px solid rgba(255, 183, 3, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 15px;
             padding: 3rem 2rem;
-            backdrop-filter: blur(10px);
-            box-shadow: 
-                0 0 30px rgba(255, 159, 0, 0.15),
-                inset 0 0 20px rgba(230, 0, 126, 0.2);
-            position: relative;
-            transition: transform 0.3s ease;
-        }
-
-        .altar-box:hover {
-            transform: scale(1.02);
-        }
-
-        /* Decoración de esquinas estilo papel picado/barroco */
-        .altar-box::before, .altar-box::after {
-            content: '💀';
-            position: absolute;
-            font-size: 1.8rem;
-            color: var(--cempasuchil);
-        }
-        .altar-box::before { top: 15px; left: 15px; }
-        .altar-box::after { bottom: 15px; right: 15px; }
-
-        /* --- ELEMENTO INTERACTIVO: VELA VIRTUAL --- */
-        .vela-container {
-            margin: 2rem auto;
-            cursor: pointer;
-            display: inline-block;
-        }
-
-        .vela {
-            width: 40px;
-            height: 90px;
-            background: linear-gradient(to right, #ffffff, var(--blanco-hueso), #e0e0e0);
-            border-radius: 5px 5px 0 0;
-            position: relative;
-            box-shadow: 0 0 15px rgba(255,255,255,0.3);
-        }
-
-        .flama {
-            width: 24px;
-            height: 40px;
-            background: radial-gradient(ellipse at bottom, var(--cempasuchil) 0%, var(--cempasuchil-dark) 50%, transparent 90%);
-            border-radius: 50% 50% 20% 20%;
-            position: absolute;
-            top: -38px;
-            left: 8px;
-            animation: parpadeoFlama 0.1s infinite alternate;
-            transform-origin: bottom center;
-            box-shadow: 0 0 20px var(--cempasuchil);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-
-        /* Estado cuando la vela está apagada */
-        .vela-container.apagada .flama {
-            opacity: 0;
-            transform: scale(0);
-        }
-
-        .instruccion {
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            color: var(--cempasuchil);
-            opacity: 0.8;
-        }
-
-        /* --- TEXTO PROVENIENTE DEL MÁS ALLÁ --- */
-        .poema {
-            font-style: italic;
-            font-size: 1.2rem;
-            line-height: 1.8;
-            color: var(--blanco-hueso);
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            transition: all 0.5s ease;
         }
 
-        /* --- ANIMACIONES CSS --- */
-        @keyframes brilloMistico {
+        .altar-centro:hover {
+            border-color: rgba(255, 183, 3, 0.5);
+            box-shadow: 0 20px 60px rgba(251, 133, 0, 0.15);
+        }
+
+        /* Mensaje poético */
+        .leyenda {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            letter-spacing: 1px;
+            color: #E2D9C2;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+            margin-bottom: 2.5rem;
+        }
+
+        /* Botón de Ofrenda con Brillo de Velas */
+        .btn-ofrenda {
+            background: linear-gradient(135deg, var(--naranja-profundo), var(--oro-cempasuchil));
+            color: #050206;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(251, 133, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-ofrenda:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px var(--oro-cempasuchil), 0 0 40px rgba(251, 133, 0, 0.6);
+            color: #000;
+        }
+
+        /* --- DETALLE MÍSTICO: PÉTALOS FLOTANTES --- */
+        .petalo {
+            position: absolute;
+            background: linear-gradient(to right, var(--oro-cempasuchil), var(--naranja-profundo));
+            border-radius: 50% 0 50% 50%;
+            pointer-events: none;
+            opacity: 0.7;
+            animation: caer 8s linear infinite;
+        }
+
+        @keyframes caer {
             0% {
-                text-shadow: 0 0 10px var(--cempasuchil), 0 0 20px var(--cempasuchil-dark), 0 0 30px var(--fucsia-papel);
+                transform: translateY(-10vh) translateX(0) rotate(0deg);
+                opacity: 0;
             }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.6; }
             100% {
-                text-shadow: 0 0 15px var(--cempasuchil), 0 0 35px var(--fucsia-papel), 0 0 60px var(--cempasuchil);
-                transform: translateY(-2px);
+                transform: translateY(105vh) translateX(100px) rotate(450deg);
+                opacity: 0;
             }
         }
 
-        @keyframes parpadeoFlama {
-            0% { transform: scale(1) rotate(-1deg); filter: brightness(1); }
-            100% { transform: scale(1.08) rotate(1.5deg); filter: brightness(1.2); }
-        }
-
-        /* Adaptabilidad para móviles */
+        /* Ajustes para pantallas pequeñas */
         @media (max-width: 600px) {
-            .titulo-principal { font-size: 2.5rem; }
-            .subtitulo { font-size: 1rem; }
-            .poema { font-size: 1rem; }
+            .titulo-texto { font-size: 38px; }
+            .subtitulo-texto { font-size: 9px; }
+            .leyenda { font-size: 0.95rem; }
+            .altar-centro { padding: 2rem 1rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Canvas de fondo para las formas y pétalos interactivos -->
-    <canvas id="canvas-particles"></canvas>
+    <!-- Fondo fotográfico inmersivo -->
+    <div class="fondo-altar"></div>
 
-    <div class="container">
-        <!-- Encabezado Pro -->
-        <h1 class="titulo-principal">Ecos del Más Allá</h1>
-        <p class="subtitulo">Una ofrenda digital</p>
+    <!-- Humo flotante del copal/incienso -->
+    <canvas id="canvas-humo"></canvas>
 
-        <!-- Altar interactivo -->
-        <div class="altar-box">
-            <p class="poema">
-                "Cierran los ojos los vivos,<br>
-                abren el alma los muertos;<br>
-                en este altar nos seguimos,<br>
-                cruzando senderos inciertos."
-            </p>
-
-            <!-- La Vela Interactiva -->
-            <div class="vela-container" id="miVela" onclick="alternarVela()">
-                <div class="vela">
-                    <div class="flama"></div>
-                </div>
-                <p class="instruccion" id="textoVela">Haz clic para apagar la flama</p>
-            </div>
+    <div class="escena-principal">
+        
+        <!-- ENCABEZADO: Recreación exacta del texto arqueado de tu imagen -->
+        <div class="contenedor-titulos">
+            <svg class="titulo-curvo-svg" viewBox="0 0 1000 320">
+                <defs>
+                    <!-- Curva para el título principal -->
+                    <path id="curva-titulo" d="M 100 240 Q 500 60 900 240" fill="transparent"/>
+                    <!-- Curva paralela para el subtítulo largo -->
+                    <path id="curva-subtitulo" d="M 120 270 Q 500 115 880 270" fill="transparent"/>
+                </defs>
+                
+                <!-- Texto Principal -->
+                <text class="titulo-texto">
+                    <textPath href="#curva-titulo" startOffset="50%" text-anchor="middle">
+                        Ecos del mas alla
+                    </textPath>
+                </text>
+                
+                <!-- Texto Secundario/Subtítulo descriptivo -->
+                <text class="subtitulo-texto">
+                    <textPath href="#curva-subtitulo" startOffset="50%" text-anchor="middle">
+                        Un viaje por las canciones, las leyendas y las memorias del Día de Muertos.
+                    </textPath>
+                </text>
+            </svg>
         </div>
+
+        <!-- Módulo del Altar / Interfaz de Usuario -->
+        <div class="altar-centro">
+            <p class="leyenda">
+                Cruza el umbral del cempasúchil y enciende el recuerdo.<br>
+                Las almas sedientas regresan guiadas por la luz del copal y el cantar de la tierra.
+            </p>
+            <button class="btn-ofrenda" onclick="invocarPetalos()">Colocar una Ofrenda</button>
+        </div>
+
     </div>
 
-    <!-- JAVASCRIPT EFECTOS MÍSTICOS (Partículas/Pétalos flotando) -->
+    <!-- JAVASCRIPT: Efectos atmosféricos pro (Humo interactivo y lluvia de cempasúchil) -->
     <script>
-        const canvas = document.getElementById('canvas-particles');
+        // --- EFECTO 1: SISTEMA DE HUMO/COPAL (Canvas) ---
+        const canvas = document.getElementById('canvas-humo');
         const ctx = canvas.getContext('2d');
 
-        // Ajustar el tamaño del lienzo a la pantalla
-        function resizeCanvas() {
+        function ajustarPantalla() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+        window.addEventListener('resize', ajustarPantalla);
+        ajustarPantalla();
 
-        // Arreglo para guardar las partículas
-        const particulas = [];
-
-        // Clase Partícula (Pétalos de cempasúchil flotantes y luces del más allá)
-        class Particula {
+        const nubesHumo = [];
+        class Humo {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = canvas.height + Math.random() * 100;
-                this.size = Math.random() * 6 + 4;
-                this.speedY = Math.random() * 1 + 0.5; // Suben despacio
-                this.speedX = Math.sin(Math.random() * 2) * 0.5;
-                this.color = Math.random() > 0.5 ? '#FF9F00' : '#E6007E'; // Cempasúchil o Fucsia Papel
-                this.rotation = Math.random() * 360;
-                this.rotationSpeed = Math.random() * 2 - 1;
-                this.opacidad = Math.random() * 0.5 + 0.3;
+                this.size = Math.random() * 80 + 60;
+                this.vx = Math.random() * 0.4 - 0.2;
+                this.vy = -(Math.random() * 0.6 + 0.3);
+                this.alpha = Math.random() * 0.4 + 0.1;
             }
-
             update() {
-                this.y -= this.speedY;
-                this.x += Math.sin(this.y / 30) * 0.5; // Movimiento oscilatorio natural
-                this.rotation += this.rotationSpeed;
-
-                // Si sale de la pantalla por arriba, se reinicia abajo
-                if (this.y < -20) {
-                    this.y = canvas.height + 20;
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.y < -this.size) {
+                    this.y = canvas.height + this.size;
                     this.x = Math.random() * canvas.width;
                 }
             }
-
             draw() {
                 ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate((this.rotation * Math.PI) / 180);
-                ctx.globalAlpha = this.opacidad;
-                ctx.fillStyle = this.color;
-                
-                // Dibujar forma orgánica de pétalo
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = '#6D597A'; // Tono humo purpúreo/místico
+                ctx.filter = 'blur(40px)';
                 ctx.beginPath();
-                ctx.ellipse(0, 0, this.size, this.size / 1.5, 0, 0, 2 * Math.PI);
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
-                
-                // Efecto de brillo alrededor de algunos pétalos
-                if(this.color === '#FF9F00') {
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = '#CC5A01';
-                }
-                
                 ctx.restore();
             }
         }
 
-        // Inicializar partículas (100 para que se vea premium pero fluido)
-        for (let i = 0; i < 100; i++) {
-            particulas.push(new Particula());
-        }
+        for(let i=0; i<30; i++) { nubesHumo.push(new Humo()); }
 
-        // Bucle de animación infinito
+        function bucle() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
 Usa el código con precaución.
-function animar() {
-ctx.clearRect(0, 0, canvas.width, canvas.height);
-particulas.forEach(p => {
-p.update();
-p.draw();
-});
-requestAnimationFrame(animar);
+nubesHumo.forEach(n => { n.update(); n.draw(); });
+requestAnimationFrame(bucle);
 }
-animar();
-// Control de la vela interactiva
-let encendida = true;
-function alternarVela() {
-const velaContainer = document.getElementById('miVela');
-const textoVela = document.getElementById('textoVela');
-encendida = !encendida;
-if (encendida) {
-velaContainer.classList.remove('apagada');
-textoVela.innerText = "Haz clic para apagar la flama";
-} else {
-velaContainer.classList.add('apagada');
-textoVela.innerText = "Haz clic para encender la luz de guía";
+bucle();
+// --- EFECTO 2: LLUVIA GENERATIVA DE PÉTALOS DE CEMPASÚCHIL ---
+function crearPetalo() {
+const petalo = document.createElement('div');
+petalo.classList.add('petalo');
+// Tamaños y posiciones aleatorias
+const ancho = Math.random() * 10 + 8;
+petalo.style.width = ${ancho}px;
+petalo.style.height = ${ancho * 1.4}px;
+petalo.style.left = ${Math.random() * 100}vw;
+// Variación en la velocidad de caída
+petalo.style.animationDuration = ${Math.random() * 5 + 5}s;
+document.body.appendChild(petalo);
+// Eliminar del documento una vez termine la animación para no saturar memoria
+setTimeout(() => { petalo.remove(); }, 10000);
+}
+// Generación continua automática (Baja densidad para mantener el misterio)
+setInterval(crearPetalo, 400);
+// Disparador especial al presionar el botón interactivo del altar
+function invocarPetalos() {
+for(let i=0; i<25; i++) {
+setTimeout(crearPetalo, i * 80);
 }
 }
 
 
 
-### Características Pro que incluye este código:
-1. **Paleta de Colores de Autor:** Usa una combinación de Negro Inframundo, Morado Místico, Fucsia Papel Picado y Naranja Cempasúchil mediante variables CSS (`:root`).
-2. **Fondo Procedural (HTML5 Canvas):** Los pétalos de cempasúchil flotan desde abajo de la pantalla con físicas ligeras de oscilación para emular el viento del más allá.
-3. **Tipografía Premium:** Conecta directamente con Google Fonts para traer la fuente de diseño *Cinzel Decorative*, perfecta para un acabado místico de alta calidad.
-4. **Interactividad:** No es solo estético; la vela reacciona al clic, apagando y encendiendo la llama con transiciones fluidas de escala y opacidad.
+### ¿Qué mejoras incluye para parecerse a tu imagen?
+1. **Curvatura Perfecta del Texto:** Implementé un contenedor **SVG (`<textPath>`)** que obliga al código HTML a moldear las palabras exactamente en el mismo arco curvo y armonioso que muestra tu captura de pantalla, incluyendo el subtítulo descriptivo debajo.
+2. **Atmósfera de Iluminación Clásica:** Reemplacé el fondo plano por una imagen base de un altar tradicional envuelto en una penumbra lograda mediante CSS (`radial-gradient` en tonos negros y morados).
+3. **Niebla/Copal en Tiempo Real:** El script genera partículas ultra-difuminadas que suben lentamente por la pantalla, simulando el humo del incienso o copal característico de las ofrendas.
 
 <FollowUp>
-¿Te gustaría que le agreguemos un **efecto de sonido de viento místico**, o prefieres que pongamos **secciones extras** para añadir fotos y nombres de seres queridos en el altar?
+¿Qué te parece este diseño? Si lo deseas, podemos añadirle un **reproductor de música oculto** para que suene una melodía tradicional de fondo, o modificar el **botón de ofrenda** para que abra una caja de texto donde escribir dedicatorias.
 </FollowUp>
