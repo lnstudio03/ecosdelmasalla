@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecos del Más Allá - Día de Muertos</title>
+    <title>Ecos del Más Allá - Experiencia Conectada</title>
     
-    <!-- Tipografía mística y clásica estilo gótico/antiguo -->
+    <!-- Tipografías de Google Fonts -->
     <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=Almendra+SC&family=Cinzel+Decorative:wght@700&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+    <link href="https://googleapis.com/css2?family=Almendra+SC&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
-        /* --- VARIABLES DE DISEÑO --- */
         :root {
             --oro-cempasuchil: #FFB703;
             --naranja-profundo: #FB8500;
             --blanco-humo: #EAE2B7;
-            --negro-penumbra: #050206;
+            --negro-penumbra: #0A050F;
+            --morado-velacion: #1A0B2E;
         }
 
         * {
@@ -31,14 +31,10 @@
             font-family: 'Montserrat', sans-serif;
             min-height: 100vh;
             overflow-x: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             position: relative;
         }
 
-        /* --- FONDO ATMOSFÉRICO RECREADO --- */
-        /* Usamos una imagen de altar real y un degradado oscuro encima para simular la penumbra de la foto */
+        /* --- FONDO CINEMÁTICO --- */
         .fondo-altar {
             position: fixed;
             top: 0;
@@ -46,14 +42,19 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at center, rgba(5, 2, 6, 0.2) 0%, rgba(5, 2, 6, 0.85) 80%),
+                radial-gradient(circle at center, rgba(10, 5, 15, 0.4) 0%, rgba(10, 5, 15, 0.9) 80%),
                 url('https://unsplash.com') no-repeat center center;
             background-size: cover;
             z-index: 1;
-            filter: saturate(1.1) brightness(0.7);
+            filter: saturate(0.8) brightness(0.5);
+            transition: filter 1.5s ease;
         }
 
-        /* --- CAPA INTERACTIVA DE NIEBLA Y HUMO --- */
+        /* Cambia el fondo dinámicamente cuando se activa la cadena */
+        body.altar-encendido .fondo-altar {
+            filter: saturate(1.3) brightness(0.7) contrast(1.1);
+        }
+
         #canvas-humo {
             position: fixed;
             top: 0;
@@ -62,266 +63,376 @@
             height: 100%;
             z-index: 2;
             pointer-events: none;
-            opacity: 0.35;
+            opacity: 0.4;
         }
 
-        /* --- CONTENEDOR DE LA INTERFAZ --- */
-        .escena-principal {
+        /* --- CONTENEDOR DE PANTALLAS --- */
+        .contenedor-flujo {
             position: relative;
             z-index: 3;
-            width: 100%;
-            max-width: 1000px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5rem; /* Separación estética entre secciones en cadena */
+        }
+
+        /* --- PANTALLA BASE / DISEÑO DE TÍTULO CURVO --- */
+        .cabecera-arco {
             text-align: center;
-            padding: 2rem;
+            margin-bottom: 2rem;
         }
 
-        /* --- MARCO INVISIBLE PARA ACOMODAR EL TEXTO EN ARCO --- */
-        .contenedor-titulos {
-            margin-bottom: 3rem;
-            position: relative;
-        }
-
-        /* Título Curvo con CSS avanzado (SVG integrado para imitar perfectamente la forma de la imagen) */
         .titulo-curvo-svg {
             width: 100%;
             max-width: 750px;
             height: auto;
             margin: 0 auto;
-            filter: drop-shadow(0px 4px 15px rgba(0, 0, 0, 0.9));
+            filter: drop-shadow(0px 5px 15px rgba(0, 0, 0, 0.9));
         }
 
         .titulo-texto {
             font-family: 'Almendra SC', serif;
             font-size: 58px;
             fill: var(--blanco-humo);
+            letter-spacing: 3px;
+        }
+
+        .subtitulo-texto {
+            font-size: 13px;
+            fill: #C3BA93;
             letter-spacing: 2px;
         }
 
-        /* Subtítulo arqueado que sigue la silueta inferior */
-        .subtitulo-texto {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 300;
-            font-size: 13px;
-            fill: #D4CDA7;
-            letter-spacing: 1.5px;
-            word-spacing: 2px;
-            opacity: 0.9;
-        }
-
-        /* --- ALTAR INTERACTIVO --- */
-        .altar-centro {
-            background: rgba(13, 7, 18, 0.5);
-            border: 1px solid rgba(255, 183, 3, 0.2);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border-radius: 15px;
+        /* --- MÓDULOS DE LAS SECCIONES (TARJETAS) --- */
+        .seccion-card {
+            background: rgba(26, 11, 46, 0.4);
+            border: 1px solid rgba(255, 183, 3, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
             padding: 3rem 2rem;
-            max-width: 650px;
-            margin: 0 auto;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-            transition: all 0.5s ease;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 1;
         }
 
-        .altar-centro:hover {
-            border-color: rgba(255, 183, 3, 0.5);
-            box-shadow: 0 20px 60px rgba(251, 133, 0, 0.15);
+        /* Estado bloqueado inicial para crear la conexión de flujo */
+        .bloqueado {
+            opacity: 0.25;
+            pointer-events: none;
+            transform: scale(0.96);
+            filter: grayscale(1);
         }
 
-        /* Mensaje poético */
-        .leyenda {
-            font-size: 1.15rem;
-            line-height: 1.8;
+        .seccion-card h2 {
+            font-family: 'Almendra SC', serif;
+            color: var(--oro-cempasuchil);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
             letter-spacing: 1px;
-            color: #E2D9C2;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
-            margin-bottom: 2.5rem;
         }
 
-        /* Botón de Ofrenda con Brillo de Velas */
-        .btn-ofrenda {
+        .descripcion {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            color: #DDD4BC;
+        }
+
+        /* --- BOTONES PRO --- */
+        .btn-místico {
             background: linear-gradient(135deg, var(--naranja-profundo), var(--oro-cempasuchil));
-            color: #050206;
+            color: #0A050F;
             font-family: 'Montserrat', sans-serif;
-            font-weight: 500;
-            font-size: 0.95rem;
+            font-weight: 600;
+            font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            padding: 1rem 2.5rem;
+            padding: 1rem 3rem;
             border: none;
-            border-radius: 30px;
+            border-radius: 40px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(251, 133, 0, 0.4);
-            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(251, 133, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .btn-ofrenda:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 25px var(--oro-cempasuchil), 0 0 40px rgba(251, 133, 0, 0.6);
-            color: #000;
+        .btn-místico:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px var(--oro-cempasuchil);
         }
 
-        /* --- DETALLE MÍSTICO: PÉTALOS FLOTANTES --- */
+        /* --- PANTALLA 2: INTERFAZ DE MÚSICA (REPRODUCTOR) --- */
+        .lista-canciones {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .cancion-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1rem;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s, border 0.3s;
+        }
+
+        .cancion-item:hover {
+            background: rgba(255, 183, 3, 0.1);
+            border-color: var(--oro-cempasuchil);
+        }
+
+        .cancion-item.sonando {
+            background: rgba(251, 133, 0, 0.2);
+            border-color: var(--naranja-profundo);
+            font-weight: 600;
+        }
+
+        .btn-play {
+            background: none;
+            border: 2px solid currentColor;
+            color: var(--oro-cempasuchil);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        /* --- PANTALLA 3: MURO DE CALAVERITAS (FORMULARIO) --- */
+        .form-calavera {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .input-pro {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 1rem;
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-pro:focus {
+            outline: none;
+            border-color: var(--naranja-profundo);
+        }
+
+        .muro-mensajes {
+            margin-top: 2rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            text-align: left;
+        }
+
+        .nota-recuerdo {
+            background: rgba(251, 133, 0, 0.08);
+            border-left: 4px solid var(--naranja-profundo);
+            padding: 1rem;
+            border-radius: 0 12px 12px 0;
+            animation: aparecerNota 0.5s ease forwards;
+        }
+
+        /* --- SISTEMA DE PÉTALOS DINÁMICOS --- */
         .petalo {
             position: absolute;
             background: linear-gradient(to right, var(--oro-cempasuchil), var(--naranja-profundo));
             border-radius: 50% 0 50% 50%;
             pointer-events: none;
-            opacity: 0.7;
-            animation: caer 8s linear infinite;
+            opacity: 0.6;
+            animation: caer 7s linear infinite;
         }
 
         @keyframes caer {
-            0% {
-                transform: translateY(-10vh) translateX(0) rotate(0deg);
-                opacity: 0;
-            }
+            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
             10% { opacity: 0.7; }
             90% { opacity: 0.6; }
-            100% {
-                transform: translateY(105vh) translateX(100px) rotate(450deg);
-                opacity: 0;
-            }
+            100% { transform: translateY(105vh) translateX(120px) rotate(400deg); opacity: 0; }
         }
 
-        /* Ajustes para pantallas pequeñas */
+        @keyframes aparecerNota {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (max-width: 600px) {
-            .titulo-texto { font-size: 38px; }
+            .titulo-texto { font-size: 36px; }
             .subtitulo-texto { font-size: 9px; }
-            .leyenda { font-size: 0.95rem; }
-            .altar-centro { padding: 2rem 1rem; }
+            .contenedor-flujo { gap: 3rem; padding: 2rem 1rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Fondo fotográfico inmersivo -->
     <div class="fondo-altar"></div>
-
-    <!-- Humo flotante del copal/incienso -->
     <canvas id="canvas-humo"></canvas>
 
-    <div class="escena-principal">
+    <div class="contenedor-flujo">
         
-        <!-- ENCABEZADO: Recreación exacta del texto arqueado de tu imagen -->
-        <div class="contenedor-titulos">
-            <svg class="titulo-curvo-svg" viewBox="0 0 1000 320">
+        <!-- ELEMENTO CONECTADO: ARCO PRINCIPAL -->
+        <header class="cabecera-arco">
+            <svg class="titulo-curvo-svg" viewBox="0 0 1000 300">
                 <defs>
-                    <!-- Curva para el título principal -->
-                    <path id="curva-titulo" d="M 100 240 Q 500 60 900 240" fill="transparent"/>
-                    <!-- Curva paralela para el subtítulo largo -->
-                    <path id="curva-subtitulo" d="M 120 270 Q 500 115 880 270" fill="transparent"/>
+                    <path id="curva-t" d="M 100 220 Q 500 50 900 220" fill="transparent"/>
+                    <path id="curva-s" d="M 120 250 Q 500 100 880 250" fill="transparent"/>
                 </defs>
-                
-                <!-- Texto Principal -->
                 <text class="titulo-texto">
-                    <textPath href="#curva-titulo" startOffset="50%" text-anchor="middle">
-                        Ecos del mas alla
-                    </textPath>
+                    <textPath href="#curva-t" startOffset="50%" text-anchor="middle">Ecos del mas alla</textPath>
                 </text>
-                
-                <!-- Texto Secundario/Subtítulo descriptivo -->
                 <text class="subtitulo-texto">
-                    <textPath href="#curva-subtitulo" startOffset="50%" text-anchor="middle">
-                        Un viaje por las canciones, las leyendas y las memorias del Día de Muertos.
-                    </textPath>
+                    <textPath href="#curva-s" startOffset="50%" text-anchor="middle">Un viaje por las canciones, las leyendas y las memorias del Día de Muertos.</textPath>
                 </text>
             </svg>
-        </div>
+        </header>
 
-        <!-- Módulo del Altar / Interfaz de Usuario -->
-        <div class="altar-centro">
-            <p class="leyenda">
-                Cruza el umbral del cempasúchil y enciende el recuerdo.<br>
-                Las almas sedientas regresan guiadas por la luz del copal y el cantar de la tierra.
-            </p>
-            <button class="btn-ofrenda" onclick="invocarPetalos()">Colocar una Ofrenda</button>
-        </div>
-
-    </div>
-
-    <!-- JAVASCRIPT: Efectos atmosféricos pro (Humo interactivo y lluvia de cempasúchil) -->
-    <script>
-        // --- EFECTO 1: SISTEMA DE HUMO/COPAL (Canvas) ---
-        const canvas = document.getElementById('canvas-humo');
-        const ctx = canvas.getContext('2d');
-
-        function ajustarPantalla() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', ajustarPantalla);
-        ajustarPantalla();
-
-        const nubesHumo = [];
-        class Humo {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = canvas.height + Math.random() * 100;
-                this.size = Math.random() * 80 + 60;
-                this.vx = Math.random() * 0.4 - 0.2;
-                this.vy = -(Math.random() * 0.6 + 0.3);
-                this.alpha = Math.random() * 0.4 + 0.1;
-            }
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                if (this.y < -this.size) {
-                    this.y = canvas.height + this.size;
-                    this.x = Math.random() * canvas.width;
-                }
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.alpha;
-                ctx.fillStyle = '#6D597A'; // Tono humo purpúreo/místico
-                ctx.filter = 'blur(40px)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
-        }
-
-        for(let i=0; i<30; i++) { nubesHumo.push(new Humo()); }
-
-        function bucle() {
-            ctx.clearRect(0,0,canvas.width,canvas.height);
+        <!-- PRIMERA PANTALLA: EL ALTAR (Iniciador de la cadena) -->
+        <section class="seccion-card" id="pantalla-altar">
+            <h2>Paso I: Ofrendar la Luz</h2>
+            <p class="descripcion">Cruza el umbral del cempasúchil para encender el camino de regreso. Al activar el altar, abrirás los canales de los espíritus hacia la música.</p>
 Usa el código con precaución.
-nubesHumo.forEach(n => { n.update(); n.draw(); });
-requestAnimationFrame(bucle);
+Colocar Ofrenda
+Paso II: Melodías del Inframundo
+La luz está lista. Elige una frecuencia musical tradicional para sintonizar los ecos y activar el portal de escritura.
+1. La Llorona (Son Istmeño)
+▶
+
+
+2. La Bruja (Son Jarocho)
+▶
+
+
+3. Amor Eterno
+▶
+
+
+Paso III: Calaveras y Memorias
+Has completado el ritual de guía. Escribe un verso, una calaverita literaria o el nombre de tus seres queridos para inmortalizarlos en el altar digital.
+Grabar en la Eternidad
+// --- 1. GESTIÓN DEL FLUJO DE LA CADENA ---
+function conectarPasoUno() {
+// Activa efectos en el body
+document.body.classList.add('altar-encendido');
+// Desbloquea la Pantalla II de Música
+document.getElementById('pantalla-musica').classList.remove('bloqueado');
+// Disparar lluvia masiva de pétalos dorados en celebración
+for(let i=0; i<35; i++) {
+setTimeout(crearPetalo, i * 60);
 }
-bucle();
-// --- EFECTO 2: LLUVIA GENERATIVA DE PÉTALOS DE CEMPASÚCHIL ---
+// Retroalimentación visual al botón
+const btn = document.querySelector('#pantalla-altar .btn-místico');
+btn.innerText = "¡Altar Iluminado! ✨";
+btn.style.background = "linear-gradient(135deg, #2a9d8f, #e9c46a)";
+btn.disabled = true;
+}
+function seleccionarCancion(elemento, nombreCancion) {
+// Quitar clase "sonando" de otros items
+document.querySelectorAll('.cancion-item').forEach(item => item.classList.remove('sonando'));
+// Activar item actual
+elemento.classList.add('sonando');
+elemento.querySelector('.btn-play').innerText = "🎵";
+// LOGICA DE CONEXIÓN: Desbloquea automáticamente el Paso III
+document.getElementById('pantalla-muro').classList.remove('bloqueado');
+// Desplazar levemente la vista para guiar al usuario en la cadena
+document.getElementById('pantalla-muro').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function publicarMemoria() {
+const nombre = document.getElementById('input-nombre').value.trim();
+const texto = document.getElementById('input-dedicatoria').value.trim();
+if(!nombre || !texto) {
+alert("Por favor, llena ambos campos para completar el altar.");
+return;
+}
+// Crear el elemento de memoria interactivo
+const contenedorMuro = document.getElementById('muro-mensajes');
+const nuevaNota = document.createElement('div');
+nuevaNota.classList.add('nota-recuerdo');
+nuevaNota.innerHTML = <strong>Para: ${nombre}</strong><p>${texto}</p>;
+// Insertar al inicio del muro
+contenedorMuro.insertBefore(nuevaNota, contenedorMuro.firstChild);
+// Limpiar inputs
+document.getElementById('input-nombre').value = "";
+document.getElementById('input-dedicatoria').value = "";
+// Efecto extra de ráfaga de pétalos al escribir una memoria
+for(let i=0; i<8; i++) { setTimeout(crearPetalo, i * 100); }
+}
+// --- 2. SISTEMA ATMOSFÉRICO DE COPAL (CANVAS) ---
+const canvas = document.getElementById('canvas-humo');
+const ctx = canvas.getContext('2d');
+function resize() {
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+const humos = [];
+class Incienso {
+constructor() {
+this.x = Math.random() * canvas.width;
+this.y = canvas.height + Math.random() * 100;
+this.r = Math.random() * 70 + 50;
+this.vy = -(Math.random() * 0.5 + 0.3);
+this.vx = Math.sin(Math.random()) * 0.2;
+this.opacity = Math.random() * 0.3 + 0.1;
+}
+update() {
+this.y += this.vy;
+this.x += Math.sin(this.y / 40) * 0.3;
+if(this.y < -this.r) {
+this.y = canvas.height + this.r;
+this.x = Math.random() * canvas.width;
+}
+}
+draw() {
+ctx.save();
+ctx.globalAlpha = this.opacity;
+ctx.fillStyle = '#5c4d70';
+ctx.filter = 'blur(35px)';
+ctx.beginPath();
+ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+ctx.fill();
+ctx.restore();
+}
+}
+for(let i=0; i<25; i++) humos.push(new Incienso());
+function loop() {
+ctx.clearRect(0,0,canvas.width,canvas.height);
+humos.forEach(h => { h.update(); h.draw(); });
+requestAnimationFrame(loop);
+}
+loop();
+// --- 3. CAÍDA DE PÉTALOS AUTOMÁTICA ---
 function crearPetalo() {
-const petalo = document.createElement('div');
-petalo.classList.add('petalo');
-// Tamaños y posiciones aleatorias
-const ancho = Math.random() * 10 + 8;
-petalo.style.width = ${ancho}px;
-petalo.style.height = ${ancho * 1.4}px;
-petalo.style.left = ${Math.random() * 100}vw;
-// Variación en la velocidad de caída
-petalo.style.animationDuration = ${Math.random() * 5 + 5}s;
-document.body.appendChild(petalo);
-// Eliminar del documento una vez termine la animación para no saturar memoria
-setTimeout(() => { petalo.remove(); }, 10000);
+const p = document.createElement('div');
+p.classList.add('petalo');
+const tam = Math.random() * 10 + 7;
+p.style.width = ${tam}px;
+p.style.height = ${tam * 1.5}px;
+p.style.left = ${Math.random() * 100}vw;
+p.style.animationDuration = ${Math.random() * 4 + 4}s;
+document.body.appendChild(p);
+setTimeout(() => p.remove(), 7000);
 }
-// Generación continua automática (Baja densidad para mantener el misterio)
-setInterval(crearPetalo, 400);
-// Disparador especial al presionar el botón interactivo del altar
-function invocarPetalos() {
-for(let i=0; i<25; i++) {
-setTimeout(crearPetalo, i * 80);
-}
-}
+setInterval(crearPetalo, 600);
 
 
-
-### ¿Qué mejoras incluye para parecerse a tu imagen?
-1. **Curvatura Perfecta del Texto:** Implementé un contenedor **SVG (`<textPath>`)** que obliga al código HTML a moldear las palabras exactamente en el mismo arco curvo y armonioso que muestra tu captura de pantalla, incluyendo el subtítulo descriptivo debajo.
-2. **Atmósfera de Iluminación Clásica:** Reemplacé el fondo plano por una imagen base de un altar tradicional envuelto en una penumbra lograda mediante CSS (`radial-gradient` en tonos negros y morados).
-3. **Niebla/Copal en Tiempo Real:** El script genera partículas ultra-difuminadas que suben lentamente por la pantalla, simulando el humo del incienso o copal característico de las ofrendas.
 
 <FollowUp>
-¿Qué te parece este diseño? Si lo deseas, podemos añadirle un **reproductor de música oculto** para que suene una melodía tradicional de fondo, o modificar el **botón de ofrenda** para que abra una caja de texto donde escribir dedicatorias.
+¿Qué opinas de este sistema encadenado? ¿Te gustaría que implementemos **música con audio real** para las canciones o prefieres que le demos un estilo visual diferente a las tarjetas?
 </FollowUp>
