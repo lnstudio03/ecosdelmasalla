@@ -1,312 +1,128 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecos del Más Allá - Experiencia Conectada</title>
-    
-    <!-- Tipografías de Google Fonts -->
-    <link rel="preconnect" href="https://googleapis.com">
-    <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=Almendra+SC&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --oro-cempasuchil: #FFB703;
-            --naranja-profundo: #FB8500;
-            --blanco-humo: #EAE2B7;
-            --negro-penumbra: #0A050F;
-            --morado-velacion: #1A0B2E;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: var(--negro-penumbra);
-            color: var(--blanco-humo);
-            font-family: 'Montserrat', sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* --- FONDO CINEMÁTICO --- */
-        .fondo-altar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at center, rgba(10, 5, 15, 0.4) 0%, rgba(10, 5, 15, 0.9) 80%),
-                url('https://unsplash.com') no-repeat center center;
-            background-size: cover;
-            z-index: 1;
-            filter: saturate(0.8) brightness(0.5);
-            transition: filter 1.5s ease;
-        }
-
-        /* Cambia el fondo dinámicamente cuando se activa la cadena */
-        body.altar-encendido .fondo-altar {
-            filter: saturate(1.3) brightness(0.7) contrast(1.1);
-        }
-
-        #canvas-humo {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            pointer-events: none;
-            opacity: 0.4;
-        }
-
-        /* --- CONTENEDOR DE PANTALLAS --- */
-        .contenedor-flujo {
-            position: relative;
-            z-index: 3;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 5rem; /* Separación estética entre secciones en cadena */
-        }
-
-        /* --- PANTALLA BASE / DISEÑO DE TÍTULO CURVO --- */
-        .cabecera-arco {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .titulo-curvo-svg {
-            width: 100%;
-            max-width: 750px;
-            height: auto;
-            margin: 0 auto;
-            filter: drop-shadow(0px 5px 15px rgba(0, 0, 0, 0.9));
-        }
-
-        .titulo-texto {
-            font-family: 'Almendra SC', serif;
-            font-size: 58px;
-            fill: var(--blanco-humo);
-            letter-spacing: 3px;
-        }
-
-        .subtitulo-texto {
-            font-size: 13px;
-            fill: #C3BA93;
-            letter-spacing: 2px;
-        }
-
-        /* --- MÓDULOS DE LAS SECCIONES (TARJETAS) --- */
-        .seccion-card {
-            background: rgba(26, 11, 46, 0.4);
-            border: 1px solid rgba(255, 183, 3, 0.15);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 3rem 2rem;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            opacity: 1;
-        }
-
-        /* Estado bloqueado inicial para crear la conexión de flujo */
-        .bloqueado {
-            opacity: 0.25;
-            pointer-events: none;
-            transform: scale(0.96);
-            filter: grayscale(1);
-        }
-
-        .seccion-card h2 {
-            font-family: 'Almendra SC', serif;
-            color: var(--oro-cempasuchil);
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            letter-spacing: 1px;
-        }
-
-        .descripcion {
-            font-size: 1.05rem;
-            line-height: 1.7;
-            margin-bottom: 2rem;
-            color: #DDD4BC;
-        }
-
-        /* --- BOTONES PRO --- */
-        .btn-místico {
-            background: linear-gradient(135deg, var(--naranja-profundo), var(--oro-cempasuchil));
-            color: #0A050F;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            padding: 1rem 3rem;
-            border: none;
-            border-radius: 40px;
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(251, 133, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .btn-místico:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 30px var(--oro-cempasuchil);
-        }
-
-        /* --- PANTALLA 2: INTERFAZ DE MÚSICA (REPRODUCTOR) --- */
-        .lista-canciones {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .cancion-item {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 1rem;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: background 0.3s, border 0.3s;
-        }
-
-        .cancion-item:hover {
-            background: rgba(255, 183, 3, 0.1);
-            border-color: var(--oro-cempasuchil);
-        }
-
-        .cancion-item.sonando {
-            background: rgba(251, 133, 0, 0.2);
-            border-color: var(--naranja-profundo);
-            font-weight: 600;
-        }
-
-        .btn-play {
-            background: none;
-            border: 2px solid currentColor;
-            color: var(--oro-cempasuchil);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-        }
-
-        /* --- PANTALLA 3: MURO DE CALAVERITAS (FORMULARIO) --- */
-        .form-calavera {
-            max-width: 500px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .input-pro {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 1rem;
-            border-radius: 10px;
-            color: #fff;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .input-pro:focus {
-            outline: none;
-            border-color: var(--naranja-profundo);
-        }
-
-        .muro-mensajes {
-            margin-top: 2rem;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            text-align: left;
-        }
-
-        .nota-recuerdo {
-            background: rgba(251, 133, 0, 0.08);
-            border-left: 4px solid var(--naranja-profundo);
-            padding: 1rem;
-            border-radius: 0 12px 12px 0;
-            animation: aparecerNota 0.5s ease forwards;
-        }
-
-        /* --- SISTEMA DE PÉTALOS DINÁMICOS --- */
-        .petalo {
-            position: absolute;
-            background: linear-gradient(to right, var(--oro-cempasuchil), var(--naranja-profundo));
-            border-radius: 50% 0 50% 50%;
-            pointer-events: none;
-            opacity: 0.6;
-            animation: caer 7s linear infinite;
-        }
-
-        @keyframes caer {
-            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.7; }
-            90% { opacity: 0.6; }
-            100% { transform: translateY(105vh) translateX(120px) rotate(400deg); opacity: 0; }
-        }
-
-        @keyframes aparecerNota {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 600px) {
-            .titulo-texto { font-size: 36px; }
-            .subtitulo-texto { font-size: 9px; }
-            .contenedor-flujo { gap: 3rem; padding: 2rem 1rem; }
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#170c18">
+  <meta name="description" content="Un viaje por las canciones, las leyendas y las memorias del Día de Muertos.">
+  <title>Ecos del más allá | Un altar sonoro</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
-<body>
-
-    <div class="fondo-altar"></div>
-    <canvas id="canvas-humo"></canvas>
-
-    <div class="contenedor-flujo">
-        
-        <!-- ELEMENTO CONECTADO: ARCO PRINCIPAL -->
-        <header class="cabecera-arco">
-            <svg class="titulo-curvo-svg" viewBox="0 0 1000 300">
-                <defs>
-                    <path id="curva-t" d="M 100 220 Q 500 50 900 220" fill="transparent"/>
-                    <path id="curva-s" d="M 120 250 Q 500 100 880 250" fill="transparent"/>
-                </defs>
-                <text class="titulo-texto">
-                    <textPath href="#curva-t" startOffset="50%" text-anchor="middle">Ecos del mas alla</textPath>
-                </text>
-                <text class="subtitulo-texto">
-                    <textPath href="#curva-s" startOffset="50%" text-anchor="middle">Un viaje por las canciones, las leyendas y las memorias del Día de Muertos.</textPath>
-                </text>
-            </svg>
-        </header>
-
-        <!-- PRIMERA PANTALLA: EL ALTAR (Iniciador de la cadena) -->
-        <section class="seccion-card" id="pantalla-altar">
-            <h2>Paso I: Ofrendar la Luz</h2>
-            <p class="descripcion">Cruza el umbral del cempasúchil para encender el camino de regreso. Al activar el altar, abrirás los canales de los espíritus hacia la música.</p>
-
-<FollowUp>
-¿Qué opinas de este sistema encadenado? ¿Te gustaría que implementemos **música con audio real** para las canciones o prefieres que le demos un estilo visual diferente a las tarjetas?
-</FollowUp>
+<body class="cover-page">
+  <main class="cover-shell">
+    <!-- NOTA DE EDICIÓN: Puedes reemplazar estas flores decorativas por PNG transparentes propios. -->
+    <div class="cover-atmosphere" aria-hidden="true">
+      <svg class="floating-flower flower-upper" viewBox="0 0 100 100">
+        <g fill="#e77818">
+          <ellipse cx="50" cy="18" rx="10" ry="24"/><ellipse cx="50" cy="18" rx="10" ry="24" transform="rotate(45 50 50)"/>
+          <ellipse cx="50" cy="18" rx="10" ry="24" transform="rotate(90 50 50)"/><ellipse cx="50" cy="18" rx="10" ry="24" transform="rotate(135 50 50)"/>
+        </g>
+        <g fill="#f5a623">
+          <ellipse cx="50" cy="27" rx="7" ry="17"/><ellipse cx="50" cy="27" rx="7" ry="17" transform="rotate(45 50 50)"/>
+          <ellipse cx="50" cy="27" rx="7" ry="17" transform="rotate(90 50 50)"/><ellipse cx="50" cy="27" rx="7" ry="17" transform="rotate(135 50 50)"/>
+        </g>
+        <circle cx="50" cy="50" r="10" fill="#8d3a22"/><circle cx="50" cy="50" r="4" fill="#f5d98b"/>
+      </svg>
+      <svg class="floating-flower flower-lower" viewBox="0 0 100 100">
+        <g fill="#d96b17">
+          <ellipse cx="50" cy="18" rx="10" ry="24"/><ellipse cx="50" cy="18" rx="10" ry="24" transform="rotate(45 50 50)"/>
+          <ellipse cx="50" cy="18" rx="10" ry="24" transform="rotate(90 50 50)"/><ellipse cx="50" cy="18" rx="10" ry="24" transform="rotate(135 50 50)"/>
+        </g>
+        <g fill="#f5a623">
+          <ellipse cx="50" cy="27" rx="7" ry="17"/><ellipse cx="50" cy="27" rx="7" ry="17" transform="rotate(45 50 50)"/>
+          <ellipse cx="50" cy="27" rx="7" ry="17" transform="rotate(90 50 50)"/><ellipse cx="50" cy="27" rx="7" ry="17" transform="rotate(135 50 50)"/>
+        </g>
+        <circle cx="50" cy="50" r="10" fill="#8d3a22"/><circle cx="50" cy="50" r="4" fill="#f5d98b"/>
+      </svg>
+      <span class="drifting-petal petal-one"></span>
+      <span class="drifting-petal petal-two"></span>
+      <span class="drifting-petal petal-three"></span>
+      <span class="drifting-petal petal-four"></span>
+    </div>
+    <section class="cover-content" aria-labelledby="cover-title">
+      <!-- NOTA DE EDICIÓN: Reemplaza este SVG por tu adorno de papel picado en SVG o PNG transparente. -->
+      <div class="papel-picado" aria-hidden="true">
+        <svg viewBox="0 0 640 82" role="img">
+          <path d="M8 4h80v62l-40 12L8 66zM98 4h80v62l-40 12-40-12zM188 4h80v62l-40 12-40-12zM278 4h80v62l-40 12-40-12zM368 4h80v62l-40 12-40-12zM458 4h80v62l-40 12-40-12zM548 4h80v62l-40 12-40-12z" fill="#8d2542" stroke="#e4b846" stroke-width="2"/>
+          <g fill="none" stroke="#f5d98b" stroke-width="2">
+            <path d="M35 34q13-18 26 0-13 18-26 0zm13-13v26"/>
+            <path d="M125 34q13-18 26 0-13 18-26 0zm13-13v26"/>
+            <path d="M215 34q13-18 26 0-13 18-26 0zm13-13v26"/>
+            <path d="M305 34q13-18 26 0-13 18-26 0zm13-13v26"/>
+            <path d="M395 34q13-18 26 0-13 18-26 0zm13-13v26"/>
+            <path d="M485 34q13-18 26 0-13 18-26 0zm13-13v26"/>
+            <path d="M575 34q13-18 26 0-13 18-26 0zm13-13v26"/>
+          </g>
+          <path d="M25 57h46m44 0h46m44 0h46m44 0h46m44 0h46m44 0h46m44 0h46" fill="none" stroke="#f5d98b" stroke-width="2"/>
+        </svg>
+      </div>
+      <svg class="arched-title" viewBox="0 0 700 180" role="img" aria-label="Ecos del más allá">
+        <defs>
+          <path id="title-arc" d="M 48,145 Q 350,-20 652,145"></path>
+        </defs>
+        <text>
+          <textPath href="#title-arc" startOffset="50%" text-anchor="middle">Ecos del más allá</textPath>
+        </text>
+      </svg>
+      <h1 class="cover-title-fallback" id="cover-title">Ecos del más allá</h1>
+      <h1></h1>
+      <p class="cover-subtitle">Un viaje por las canciones,</p>
+      <p class="cover-subtitle">las leyendas y las memorias</p>
+      <p class="cover-subtitle"></p>
+      <p class="cover-subtitle">del Día de Muertos</p>
+      <p class="cover-intro">Enciende una luz, escucha con el corazón y acompáñanos en este recorrido entre recuerdos y tradición.</p>
+      <!-- NOTA DE CONEXIÓN: Este botón redirige a la página de la primera canción (cancion1.html) -->
+      <a class="button button-primary cover-cta" href="cancion1.html">
+        Comienza tu recorrido <span aria-hidden="true">→</span>
+      </a>
+      <p class="cover-footnote">Acompaña tu visita con audífonos y ajusta el volumen para disfrutar de la experiencia sonora.
+      </p>
+      <!-- NOTA DE EDICIÓN: Puedes sustituir esta guirnalda SVG por una tira PNG transparente de flores de cempasúchil. -->
+      <div class="marigold-garland" aria-hidden="true">
+        <svg viewBox="0 0 660 112">
+          <defs>
+            <g id="marigold-flower">
+              <g fill="#e77818">
+                <ellipse cx="0" cy="-21" rx="8" ry="17"/>
+                <ellipse cx="0" cy="-21" rx="8" ry="17" transform="rotate(30)"/>
+                <ellipse cx="0" cy="-21" rx="8" ry="17" transform="rotate(60)"/>
+                <ellipse cx="0" cy="-21" rx="8" ry="17" transform="rotate(90)"/>
+                <ellipse cx="0" cy="-21" rx="8" ry="17" transform="rotate(120)"/>
+                <ellipse cx="0" cy="-21" rx="8" ry="17" transform="rotate(150)"/>
+                <ellipse cx="0" cy="-21" rx="8" ry="17" transform="rotate(180)"/>
+                <ellipse cx="0" cy="-21" rx="8" ry="17" transform="rotate(210)"/>
+                <ellipse cx="0" cy="-21" rx="8" ry="17" transform="rotate(240)"/>
+                <ellipse cx="0" cy="-21" rx="8" ry="17" transform="rotate(270)"/>
+                <ellipse cx="0" cy="-21" rx="8" ry="17" transform="rotate(300)"/>
+                <ellipse cx="0" cy="-21" rx="8" ry="17" transform="rotate(330)"/>
+              </g>
+              <g fill="#f5a623">
+                <ellipse cx="0" cy="-12" rx="5" ry="10"/>
+                <ellipse cx="0" cy="-12" rx="5" ry="10" transform="rotate(45)"/>
+                <ellipse cx="0" cy="-12" rx="5" ry="10" transform="rotate(90)"/>
+                <ellipse cx="0" cy="-12" rx="5" ry="10" transform="rotate(135)"/>
+                <ellipse cx="0" cy="-12" rx="5" ry="10" transform="rotate(180)"/>
+                <ellipse cx="0" cy="-12" rx="5" ry="10" transform="rotate(225)"/>
+                <ellipse cx="0" cy="-12" rx="5" ry="10" transform="rotate(270)"/>
+                <ellipse cx="0" cy="-12" rx="5" ry="10" transform="rotate(315)"/>
+              </g>
+              <circle r="8" fill="#7e351c"/>
+              <circle r="3" fill="#f9cf55"/>
+            </g>
+          </defs>
+          <path d="M18 79C104 22 151 105 231 62s125-49 203-4 130 41 208-2" fill="none" stroke="#587047" stroke-width="4" stroke-linecap="round"/>
+          <g fill="#71834b">
+            <path d="M66 66q-24-28-34-13 13 22 34 13m12-8q9-30 24-22-2 23-24 22m82 9q-22-29-35-15 13 24 35 15m13-10q8-30 23-23-1 23-23 23m81 4q-23-27-36-12 14 23 36 12m15-8q7-29 22-21-1 22-22 21m81 1q-25-25-37-9 15 22 37 9m14-7q5-30 21-23 1 22-21 23m87 4q-25-27-37-11 15 23 37 11m12-9q8-29 23-21-2 22-23 21m78 2q-23-27-36-12 14 23 36 12m12-7q8-29 23-21-2 22-23 21" />
+          </g>
+          <use href="#marigold-flower" transform="translate(102 55) scale(.88)"/>
+          <use href="#marigold-flower" transform="translate(218 72) scale(.72)"/>
+          <use href="#marigold-flower" transform="translate(331 55) scale(1.05)"/>
+          <use href="#marigold-flower" transform="translate(445 73) scale(.74)"/>
+          <use href="#marigold-flower" transform="translate(558 55) scale(.9)"/>
+        </svg>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

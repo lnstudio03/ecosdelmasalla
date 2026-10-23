@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#170c18">
+  <title>Canción 3 | Ecos del más allá</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body class="song-page">
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <a class="wordmark" href="index.html" aria-label="Ecos del más allá, portada">Ecos <span>del más allá</span></a>
+    <p class="journey-count">Parada <span>03</span> / 12</p>
+  </header>
+  <main id="contenido" class="song-layout">
+    <section class="song-hero">
+      <p class="eyebrow">Tercera ofrenda · La música que permanece</p>
+      <p class="hero-note">Cada melodía guarda una historia. Aquí comienza la tuya.</p>
+    </section>
+    <aside class="art-slot" aria-label="Portada de la canción">
+      <!-- NOTA DE EDICIÓN: Cambia los textos de los arcos por el título de la canción y el nombre de su autor. -->
+      <div class="cover-title-row">
+        <svg class="cover-side-flower" viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="#e77818"><ellipse cx="50" cy="19" rx="11" ry="24"/><ellipse cx="50" cy="19" rx="11" ry="24" transform="rotate(45 50 50)"/><ellipse cx="50" cy="19" rx="11" ry="24" transform="rotate(90 50 50)"/><ellipse cx="50" cy="19" rx="11" ry="24" transform="rotate(135 50 50)"/></g>
+          <circle cx="50" cy="50" r="11" fill="#8d3a22"/><circle cx="50" cy="50" r="4" fill="#f5d98b"/>
+        </svg>
+        <h1 class="cover-song-title">Título de la canción</h1>
+        <svg class="cover-side-flower" viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="#e77818"><ellipse cx="50" cy="19" rx="11" ry="24"/><ellipse cx="50" cy="19" rx="11" ry="24" transform="rotate(45 50 50)"/><ellipse cx="50" cy="19" rx="11" ry="24" transform="rotate(90 50 50)"/><ellipse cx="50" cy="19" rx="11" ry="24" transform="rotate(135 50 50)"/></g>
+          <circle cx="50" cy="50" r="11" fill="#8d3a22"/><circle cx="50" cy="50" r="4" fill="#f5d98b"/>
+        </svg>
+      </div>
+      <div class="cover-image-wrap">
+        <!-- NOTA DE IMÁGENES: Reemplaza esta ruta por la portada PNG de la canción (cancion3.png). -->
+        <img class="altar-image" src="cancion3.png" alt="Imagen decorativa de la canción 3" onerror="this.hidden=true">
+        <span class="art-placeholder" aria-hidden="true">Agrega tu portada · cancion3.png</span>
+      </div>
+      <svg class="cover-artist-arc" viewBox="0 0 360 48" role="img" aria-label="Nombre del autor">
+        <defs><path id="cover-artist-curve-3" d="M 32 8 Q 180 48 328 8"></path></defs>
+        <text><textPath href="#cover-artist-curve-3" startOffset="50%">Nombre del autor</textPath></text>
+      </svg>
+    </aside>
+    <details class="story-toggle">
+      <summary><span class="story-symbol" aria-hidden="true">✿</span><span class="story-heading"><span class="eyebrow">Tercera memoria</span><span class="story-title">Historia del son</span></span><span class="story-indicator" aria-hidden="true"></span></summary>
+      <div class="story-copy"><div class="story-copy-inner"><p>Cuenta aquí el origen de la canción, quién la interpreta y el contexto que la acompaña. Añade recuerdos, anécdotas o detalles sobre la tradición musical que representa.</p></div></div>
+    </details>
+    <details class="story-toggle">
+      <summary><span class="story-symbol" aria-hidden="true">☼</span><span class="story-heading"><span class="eyebrow">Lo que permanece</span><span class="story-title">Significado de la canción</span></span><span class="story-indicator" aria-hidden="true"></span></summary>
+      <div class="story-copy"><div class="story-copy-inner"><p>¿Qué emociones despierta? ¿A quién te recuerda? Describe lo que esta melodía significa para ti y cómo se enlaza con la memoria de quienes ya no están.</p></div></div>
+    </details>
+    <details class="story-toggle">
+      <summary><span class="story-symbol" aria-hidden="true">❋</span><span class="story-heading"><span class="eyebrow">Una ofrenda personal</span><span class="story-title">Un espacio para tus palabras</span></span><span class="story-indicator" aria-hidden="true"></span></summary>
+      <div class="story-copy"><div class="story-copy-inner"><p>Agrega aquí una reflexión propia, una dedicatoria o una breve descripción. Publica letras únicamente si tienes los permisos correspondientes.</p></div></div>
+    </details>
+    <section class="audio-panel" aria-labelledby="audio-title">
+      <div>
+        <p class="eyebrow">Escucha esta ofrenda</p>
+        <h2 id="audio-title">Música de esta ofrenda</h2>
+        <!-- NOTA DE EDICIÓN: Guarda el MP3 de esta canción en la raíz del proyecto con el nombre correspondiente (ej. cancion3.mp3). -->
+        <audio class="song-audio" preload="auto" src="cancion3.mp3">Tu navegador no admite la reproducción de audio.</audio>
+        <p class="audio-status" aria-live="polite">La canción comenzará al llegar a esta parada.</p>
+      </div>
+
+    </section>
+    <nav class="journey-nav" aria-label="Navegación del recorrido">
+      <!-- NOTA DE NAVEGACIÓN: Anterior conecta cancion3.html con cancion2.html. -->
+      <a class="button button-secondary" href="cancion2.html"><span aria-hidden="true">←</span> Anterior</a>
+      <span class="nav-progress">03 <span aria-hidden="true">✦</span> 12</span>
+      <!-- NOTA DE NAVEGACIÓN: Siguiente conecta cancion3.html con cancion4.html. -->
+      <a class="button button-primary" href="cancion4.html">Siguiente <span aria-hidden="true">→</span></a>
+    </nav>
+  </main>
+  <footer class="site-footer">Hecho para celebrar la memoria · Día de Muertos</footer>
+</body>
+</html>
