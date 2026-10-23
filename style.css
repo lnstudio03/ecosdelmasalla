@@ -52,6 +52,17 @@ a {
     linear-gradient(145deg, #100b10 0%, #18101a 52%, #100b10 100%);
 }
 
+.cover-audio {
+  display: none;
+}
+
+.cover-audio-status:not([hidden]) {
+  margin: 0.5rem auto 0;
+  color: var(--gold-soft);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
 .cover-shell {
   position: relative;
   display: grid;
