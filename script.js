@@ -64,6 +64,7 @@ if (coverLink) {
   const skipAudio = gate.querySelector("[data-skip-audio]");
   const gateStatus = gate.querySelector("[data-gate-audio-status]");
   let retryListenersAttached = false;
+  let coverHasPlayed = false;
 
   const removeRetryListeners = () => {
     if (retryListenersAttached) {
@@ -73,10 +74,11 @@ if (coverLink) {
     }
   };
 
-  const showAuthorizationGate = () => {
+  const showAuthorizationGate = (
+    message = "El navegador bloqueó la reproducción automática. Autoriza la música desde esta portada para continuar."
+  ) => {
     removeRetryListeners();
-    gateStatus.textContent =
-      "El navegador bloqueó la reproducción automática. Autoriza la música desde esta portada para continuar.";
+    gateStatus.textContent = message;
     gateStatus.hidden = false;
     if (!gate.open) {
       gate.showModal();
@@ -87,6 +89,7 @@ if (coverLink) {
     if (audio.paused) {
       try {
         await audio.play();
+        coverHasPlayed = true;
         status.hidden = true;
         removeRetryListeners();
       } catch {
@@ -98,6 +101,7 @@ if (coverLink) {
   const startBackgroundAudio = async () => {
     try {
       await audio.play();
+      coverHasPlayed = true;
       localStorage.setItem(preferenceKey, "enabled");
       gate.close();
       if (redirectCoverToPendingSong(coverLink)) {
@@ -114,6 +118,20 @@ if (coverLink) {
   };
 
   enableAudio.addEventListener("click", startBackgroundAudio);
+
+  audio.addEventListener("play", () => {
+    coverHasPlayed = true;
+  });
+
+  audio.addEventListener("pause", () => {
+    if (
+      coverHasPlayed &&
+      localStorage.getItem(preferenceKey) === "enabled" &&
+      document.visibilityState === "visible"
+    ) {
+      showAuthorizationGate("La música de fondo dejó de sonar. Pulsa «Activar música de fondo» para reanudarla.");
+    }
+  });
 
   audio.addEventListener("error", () => {
     const message = "No se pudo cargar index.mp3. Comprueba que esté junto a index.html.";
@@ -158,6 +176,67 @@ document.querySelectorAll(".song-audio").forEach((audio) => {
   let loadFailed = false;
   let introFinished = false;
   let needsGesture = false;
+  let hasPlayed = false;
+  let silenceDialogOpen = false;
+
+  const silenceDialog = document.createElement("dialog");
+  silenceDialog.className = "audio-gate";
+  silenceDialog.setAttribute("aria-labelledby", "song-silence-title");
+  silenceDialog.setAttribute("aria-describedby", "song-silence-description");
+  silenceDialog.innerHTML = `
+    <div class="audio-gate-content">
+      <p class="eyebrow">Una ofrenda sonora</p>
+      <h2 id="song-silence-title">La música se ha silenciado</h2>
+      <p id="song-silence-description" class="audio-gate-description">
+        La canción dejó de sonar. ¿Quieres reanudarla?
+      </p>
+      <p class="audio-gate-status" data-song-silence-status aria-live="polite"></p>
+      <div class="audio-gate-actions">
+        <button class="button button-primary" type="button" data-resume-song>Reanudar música</button>
+        <button class="button button-secondary" type="button" data-dismiss-song-silence>Ahora no</button>
+      </div>
+    </div>`;
+  document.body.append(silenceDialog);
+
+  const silenceStatus = silenceDialog.querySelector("[data-song-silence-status]");
+  const showSilenceDialog = () => {
+    if (silenceDialogOpen || !hasPlayed || loadFailed) {
+      return;
+    }
+
+    silenceDialogOpen = true;
+    silenceStatus.textContent = "";
+    silenceDialog.showModal();
+  };
+
+  silenceDialog.querySelector("[data-resume-song]").addEventListener("click", async () => {
+    silenceStatus.textContent = "Reanudando la canción…";
+    try {
+      if (audio.ended) {
+        audio.currentTime = 0;
+      }
+      audio.muted = false;
+      if (audio.volume === 0) {
+        audio.volume = 1;
+      }
+      await audio.play();
+      silenceDialog.close();
+      silenceDialogOpen = false;
+    } catch {
+      silenceStatus.textContent = "No se pudo reanudar. Comprueba el sonido del dispositivo e inténtalo de nuevo.";
+    }
+  });
+
+  silenceDialog.querySelector("[data-dismiss-song-silence]").addEventListener("click", () => {
+    silenceDialog.close();
+    silenceDialogOpen = false;
+  });
+
+  silenceDialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    silenceDialog.close();
+    silenceDialogOpen = false;
+  });
 
   const revealPage = () => {
     document.body.classList.remove("is-intro");
@@ -172,6 +251,7 @@ document.querySelectorAll(".song-audio").forEach((audio) => {
     try {
       audio.currentTime = 0;
       await audio.play();
+      hasPlayed = true;
       status.textContent = "Reproduciendo la canción de esta parada.";
       needsGesture = false;
       sessionStorage.removeItem(authorizationAttemptKey);
@@ -223,17 +303,30 @@ document.querySelectorAll(".song-audio").forEach((audio) => {
   };
 
   audio.addEventListener("play", () => {
+    hasPlayed = true;
     status.textContent = "Reproduciendo la canción de esta parada.";
+    if (silenceDialogOpen) {
+      silenceDialog.close();
+      silenceDialogOpen = false;
+    }
   });
 
   audio.addEventListener("pause", () => {
     if (!loadFailed) {
       status.textContent = "Audio en pausa.";
     }
+    showSilenceDialog();
+  });
+
+  audio.addEventListener("volumechange", () => {
+    if (hasPlayed && (audio.muted || audio.volume === 0)) {
+      showSilenceDialog();
+    }
   });
 
   audio.addEventListener("ended", () => {
     status.textContent = "La canción ha terminado.";
+    showSilenceDialog();
   });
 
   audio.addEventListener("error", () => {
