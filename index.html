@@ -5,15 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#170c18">
   <meta name="description" content="Un viaje por las canciones, las leyendas y las memorias del Día de Muertos.">
-  <title>Ecos del más allá | Un altar sonoro</title>
+  <title>Ecos del más allá | Recorrido musical</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="style.css">
+  <script src="launch-countdown.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body class="cover-page">
+  <section class="launch-curtain" data-launch-curtain aria-labelledby="launch-title" aria-modal="true" role="dialog">
+    <div class="launch-curtain-content">
+      <p class="eyebrow">Una ofrenda está por comenzar</p>
+      <h1 id="launch-title">Próximamente</h1>
+      <p class="launch-subtitle">Ecos del más allá</p>
+      <p class="launch-date">1 de noviembre de 2026 · 12:00 p. m.<br>Hora de Ciudad de México</p>
+      <div class="countdown" aria-label="Cuenta regresiva para la apertura">
+        <div class="countdown-unit"><span data-countdown-days>0</span><span>días</span></div>
+        <div class="countdown-unit"><span data-countdown-hours>00</span><span>horas</span></div>
+        <div class="countdown-unit"><span data-countdown-minutes>00</span><span>minutos</span></div>
+        <div class="countdown-unit"><span data-countdown-seconds>00</span><span>segundos</span></div>
+      </div>
+      <p class="launch-note" data-countdown-status aria-live="polite">La ofrenda abrirá pronto.</p>
+      <div class="launch-flourish" aria-hidden="true">✦ ✿ ✦</div>
+    </div>
+  </section>
   <!-- NOTA DE EDICIÓN: La música ambiental de la portada se carga desde index.mp3, en la raíz del proyecto. -->
   <audio class="cover-audio" preload="auto" loop src="index.mp3" aria-label="Música ambiental de la portada"></audio>
-  <main class="cover-shell">
+  <main class="cover-shell" inert>
     <!-- NOTA DE EDICIÓN: Puedes reemplazar estas flores decorativas por PNG transparentes propios. -->
     <div class="cover-atmosphere" aria-hidden="true">
       <svg class="floating-flower flower-upper" viewBox="0 0 100 100">
@@ -60,7 +77,7 @@
           <path d="M25 57h46m44 0h46m44 0h46m44 0h46m44 0h46m44 0h46m44 0h46" fill="none" stroke="#f5d98b" stroke-width="2"/>
         </svg>
       </div>
-      <p class="eyebrow">Un altar sonoro para recordar</p>
+      <p class="eyebrow">Ecos del más allá para recordar</p>
       <svg class="arched-title" viewBox="0 0 700 180" role="img" aria-label="Ecos del más allá">
         <defs>
           <path id="title-arc" d="M 48,145 Q 350,-20 652,145"></path>
@@ -72,7 +89,7 @@
       <h1 class="cover-title-fallback" id="cover-title">Ecos del más allá</h1>
       <p class="cover-subtitle">Un viaje por las canciones, las leyendas y las memorias del Día de Muertos</p>
       <p class="cover-intro">Enciende una luz, escucha con el corazón y acompáñanos en este recorrido entre recuerdos y tradición.</p>
-      <!-- NOTA DE CONEXIÓN: Este botón redirige a la página de la primera canción (cancion1.html) -->
+      <!-- NOTA DE CONEXIÓN: Este botón redirige a la página de la primera canción (coco.html). -->
       <a class="button button-primary cover-cta" href="coco.html">
         Comienza tu recorrido <span aria-hidden="true">→</span>
       </a>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#170c18">
+  <meta name="description" content="Descarga las imágenes de tu recorrido musical Ecos del más allá.">
+  <title>Reconocimiento de finalización | Ecos del más allá</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <script src="reconocimiento.js" defer></script>
+</head>
+<body class="song-page">
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <a class="wordmark" href="index.html" aria-label="Ecos del más allá, portada">Ecos <span>del más allá</span></a>
+    <p class="journey-count">Cierre <span>✦</span> del recorrido</p>
+  </header>
+
+  <main id="contenido" class="song-layout recognition-layout">
+    <section class="song-hero">
+      <p class="eyebrow">Cierre del recorrido</p>
+      <h1 class="recognition-title">Reconocimiento de finalización</h1>
+      <p class="hero-note">Elige por separado el nombre para el reconocimiento y el de la persona homenajeada en tu ofrenda de Ecos del más allá. Al final podrás descargar las dos imágenes como archivos PNG independientes.</p>
+      <audio id="recognition-background-audio" preload="auto" autoplay loop src="HUMBE - fantasmas.mp3">Tu navegador no admite la reproducción de audio.</audio>
+      <p class="visually-hidden" id="recognition-audio-status" aria-live="polite"></p>
+    </section>
+
+    <section class="recognition-panel" aria-labelledby="recognition-form-title">
+      <form class="recognition-form" id="recognition-form">
+        <h2 id="recognition-form-title">Personaliza tu reconocimiento</h2>
+        <label for="display-name">Nombre para el reconocimiento</label>
+        <input id="display-name" name="display-name" type="text" maxlength="60" autocomplete="off" required>
+        <p class="recognition-hint">Este nombre aparecerá en el reconocimiento. Puedes usar uno distinto al nombre de la ofrenda.</p>
+        <label for="certificate-theme">Elige un estilo</label>
+        <select id="certificate-theme" name="certificate-theme">
+          <option value="noche">Noche de ofrenda</option>
+          <option value="cempasuchil">Camino de cempasúchil</option>
+          <option value="violeta">Luz violeta</option>
+        </select>
+        <p class="recognition-dedication"><strong>Dedicatoria</strong><span>Para quienes viven en nuestra memoria. Que cada canción sea una luz en el camino.</span></p>
+      </form>
+
+      <p class="recognition-status" id="recognition-status" aria-live="polite"></p>
+      <div class="recognition-preview" id="recognition-preview" hidden>
+        <p class="recognition-preview-label">Vista previa · se actualiza al editar</p>
+        <canvas class="recognition-canvas" id="recognition-canvas" width="1600" height="1100" role="img" aria-label="Vista previa del reconocimiento"></canvas>
+      </div>
+    </section>
+
+    <section class="recognition-panel digital-altar-panel" aria-labelledby="digital-altar-title">
+      <div class="digital-altar-heading">
+        <h2 id="digital-altar-title">Tus recuerdos en Ecos del más allá</h2>
+        <p>Una sola imagen reúne las portadas de las 12 canciones y las dedicatorias que escribiste.</p>
+        <p class="digital-altar-progress" id="digital-altar-progress" aria-live="polite"></p>
+      </div>
+      <label class="recognition-form-label" for="offering-name">Nombre para la ofrenda</label>
+      <input class="recognition-name-input" id="offering-name" name="offering-name" type="text" maxlength="60" autocomplete="off" required>
+      <p class="recognition-hint">Este es el nombre de la persona que aparecerá en memoria en tu ofrenda.</p>
+      <div class="recognition-preview">
+        <p class="recognition-preview-label">Vista previa de tu ofrenda</p>
+        <canvas class="recognition-canvas digital-altar-canvas" id="digital-altar-canvas" width="1600" height="1220" role="img" aria-label="Ofrenda musical de Ecos del más allá con las doce canciones"></canvas>
+      </div>
+      <p class="recognition-status" id="digital-altar-status" aria-live="polite"></p>
+    </section>
+
+    <div class="recognition-download-group" aria-label="Descargas de imágenes">
+      <button class="button button-primary recognition-download" id="download-recognition" type="button" disabled>Descargar reconocimiento</button>
+      <button class="button button-primary recognition-download" id="download-offering" type="button" disabled>Descargar ofrenda</button>
+    </div>
+
+    <nav class="journey-nav" aria-label="Navegación del recorrido">
+      <a class="button button-secondary" href="esperame-en-el-cielo.html"><span aria-hidden="true">←</span> Volver a la última canción</a>
+      <a class="button button-secondary" href="index.html"><span aria-hidden="true">⌂</span> Portada</a>
+    </nav>
+  </main>
+
+  <footer class="site-footer">Gracias por mantener viva la memoria · Ecos del más allá</footer>
+</body>
+</html>
