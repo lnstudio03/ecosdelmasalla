@@ -2,7 +2,7 @@ const launchCurtain = document.querySelector("[data-launch-curtain]");
 const coverShell = document.querySelector(".cover-shell");
 
 if (launchCurtain && coverShell) {
-  const launchAt = new Date("2026-10-28T09:45:00-06:00").getTime();
+  const launchAt = new Date("2026-11-01T12:00:00-06:00").getTime();
   const countdownParts = {
     days: launchCurtain.querySelector("[data-countdown-days]"),
     hours: launchCurtain.querySelector("[data-countdown-hours]"),
