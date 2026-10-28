@@ -24,6 +24,11 @@ const getPendingSongUrl = () => {
 };
 
 const redirectCoverToPendingSong = (coverLink) => {
+  const launchCurtain = document.querySelector("[data-launch-curtain]");
+  if (launchCurtain && !launchCurtain.hidden) {
+    return false;
+  }
+
   const destination = getPendingSongUrl();
   sessionStorage.removeItem(pendingSongKey);
   if (!destination) {
@@ -38,6 +43,7 @@ const redirectCoverToPendingSong = (coverLink) => {
 if (coverLink) {
   const audio = document.querySelector(".cover-audio");
   const status = document.querySelector("[data-cover-audio-status]");
+  const launchCurtain = document.querySelector("[data-launch-curtain]");
   const authorizationRequested =
     new URLSearchParams(window.location.search).get("audio") === "authorize";
   const gate = document.createElement("dialog");
@@ -49,7 +55,7 @@ if (coverLink) {
       <p class="eyebrow">Una ofrenda sonora</p>
       <h2 id="audio-gate-title">¿Quieres escuchar el recorrido?</h2>
       <p id="audio-gate-description" class="audio-gate-description">
-        Activa la música para escuchar el tema de la portada y las canciones del recorrido.
+        Activa la música para escuchar el tema de la portada mientras esperas y las canciones del recorrido.
         Esta elección se guardará y no volveremos a mostrar este aviso.
       </p>
       <p class="audio-gate-status" data-gate-audio-status aria-live="polite"></p>
@@ -156,17 +162,21 @@ if (coverLink) {
     event.preventDefault();
   });
 
-  const preference = localStorage.getItem(preferenceKey);
-  if (authorizationRequested) {
-    showAuthorizationGate();
-  } else if (preference === "enabled") {
-    retryBackgroundAudio();
-    document.addEventListener("pointerdown", retryBackgroundAudio);
-    document.addEventListener("keydown", retryBackgroundAudio);
-    retryListenersAttached = true;
-  } else if (!preference) {
-    gate.showModal();
-  }
+  const startCoverExperience = () => {
+    const preference = localStorage.getItem(preferenceKey);
+    if (authorizationRequested) {
+      showAuthorizationGate();
+    } else if (preference === "enabled") {
+      retryBackgroundAudio();
+      document.addEventListener("pointerdown", retryBackgroundAudio);
+      document.addEventListener("keydown", retryBackgroundAudio);
+      retryListenersAttached = true;
+    } else if (!preference) {
+      gate.showModal();
+    }
+  };
+
+  startCoverExperience();
 }
 
 document.querySelectorAll(".song-audio").forEach((audio) => {
@@ -386,3 +396,306 @@ document.addEventListener("click", (event) => {
   document.body.classList.add("is-leaving");
   window.setTimeout(() => window.location.assign(destination.href), 180);
 });
+
+const journeySongs = [
+  { file: "coco.html", title: "El Coco", artist: "Los Folkloristas", cover: "el-coco.jpg" },
+  { file: "mariaflor.html", title: "María Flor", artist: "Pedro Arturo", cover: "maria-flor.jfif" },
+  { file: "elsondelosdifuntos.html", title: "Son de difuntos", artist: "Lila Downs", cover: "son-de-difuntos.jfif" },
+  { file: "novolvere.html", title: "No volveré", artist: "Chavela Vargas", cover: "no-volvere.png" },
+  { file: "la-bruja.html", title: "La Bruja", artist: "Tlen Huicani", cover: "la-bruja.jfif" },
+  { file: "la-llorona-nahuatl.html", title: "La Llorona", artist: "Versión en náhuatl", cover: "la-llorona-nahuatl.jfif" },
+  { file: "nostalgia.html", title: "Nostalgia", artist: "Los Malagueña", cover: "nostalgia.jfif" },
+  { file: "viene-la-muerte.html", title: "Viene la muerte", artist: "Lila Downs", cover: "viene-la-muerte.jfif" },
+  { file: "amor-eterno.html", title: "Amor eterno", artist: "Juan Gabriel", cover: "amor-eterno.jfif" },
+  { file: "la-martiniana.html", title: "La Martiniana", artist: "Tradición de Oaxaca", cover: "la-martiniana.png" },
+  { file: "dios-nunca-muere.html", title: "Dios nunca muere", artist: "Lila Downs", cover: "dios-nunca-muere.png" },
+  { file: "esperame-en-el-cielo.html", title: "Espérame en el cielo", artist: "Los Panchos", cover: "esperame-en-el-cielo.png" }
+];
+const currentSongFile = window.location.pathname.split("/").pop();
+const currentSongIndex = journeySongs.findIndex((song) => song.file === currentSongFile);
+
+if (document.body.classList.contains("song-page") && currentSongIndex !== -1) {
+  const journeyStorageKey = "ecos-del-mas-alla-visited-songs";
+  const visitedSongs = new Set(
+    (sessionStorage.getItem(journeyStorageKey) || "")
+      .split(",")
+      .filter((file) => journeySongs.some((song) => song.file === file))
+  );
+  visitedSongs.add(currentSongFile);
+  sessionStorage.setItem(journeyStorageKey, [...visitedSongs].join(","));
+
+  const journeyMap = document.createElement("details");
+  journeyMap.className = "journey-map";
+
+  const summary = document.createElement("summary");
+  summary.className = "journey-map-summary";
+  summary.textContent = `Explora las 12 paradas · ${visitedSongs.size} visitadas`;
+  journeyMap.append(summary);
+
+  const progress = document.createElement("progress");
+  progress.className = "journey-map-progress";
+  progress.max = journeySongs.length;
+  progress.value = visitedSongs.size;
+  progress.setAttribute("aria-label", `${visitedSongs.size} de 12 paradas visitadas`);
+  journeyMap.append(progress);
+
+  const songList = document.createElement("ol");
+  songList.className = "journey-map-list";
+  journeySongs.forEach((song, index) => {
+    const item = document.createElement("li");
+    const link = document.createElement("a");
+    link.href = song.file;
+    if (index === currentSongIndex) {
+      link.setAttribute("aria-current", "step");
+      item.classList.add("is-current");
+    } else if (visitedSongs.has(song.file)) {
+      item.classList.add("is-visited");
+    }
+
+    const number = document.createElement("span");
+    number.className = "journey-map-number";
+    number.textContent = String(index + 1).padStart(2, "0");
+
+    const text = document.createElement("span");
+    text.className = "journey-map-text";
+    const title = document.createElement("span");
+    title.className = "journey-map-title";
+    title.textContent = song.title;
+    const artist = document.createElement("span");
+    artist.className = "journey-map-artist";
+    artist.textContent = song.artist;
+    text.append(title, artist);
+
+    const state = document.createElement("span");
+    state.className = "journey-map-state";
+    state.textContent =
+      index === currentSongIndex
+        ? "Estás aquí"
+        : visitedSongs.has(song.file)
+          ? "Visitada"
+          : "Por escuchar";
+
+    link.append(number, text, state);
+    item.append(link);
+    songList.append(item);
+  });
+  journeyMap.append(songList);
+
+  const songHero = document.querySelector(".song-hero");
+  if (songHero) {
+    songHero.insertAdjacentElement("afterend", journeyMap);
+  }
+
+  const offeringsStorageKey = "ecos-del-mas-alla-offerings";
+  const memorialNameStorageKey = "ecos-del-mas-alla-memorial-name";
+  const activity = document.createElement("section");
+  activity.className = "participation-panel";
+  activity.setAttribute("aria-label", "Dedica canciones en Ecos del más allá");
+  activity.innerHTML = `
+    <details class="altar-builder">
+      <summary><span aria-hidden="true">✿</span><span>Dedica esta canción en Ecos del más allá</span><span class="altar-builder-count" data-altar-count></span></summary>
+      <form class="offering-form" data-offering-form>
+        <div class="altar-progress">
+          <progress data-altar-progress max="${journeySongs.length}" value="0" aria-label="Dedicatorias agregadas a la ofrenda"></progress>
+          <p data-altar-progress-label aria-live="polite">0 de ${journeySongs.length} canciones tienen una dedicatoria.</p>
+        </div>
+        <div class="offering-choices" role="group" aria-label="Elige un elemento para tu ofrenda">
+          <button class="offering-choice" type="button" data-offering-item="flower" aria-pressed="true"><span aria-hidden="true">✿</span><span>Flor</span></button>
+          <button class="offering-choice" type="button" data-offering-item="candle" aria-pressed="false"><span aria-hidden="true">🕯</span><span>Veladora</span></button>
+          <button class="offering-choice" type="button" data-offering-item="memory" aria-pressed="false"><span aria-hidden="true">♡</span><span>Recuerdo</span></button>
+        </div>
+        <label class="offering-field" for="offering-person">Nombre de la persona homenajeada</label>
+        <input class="offering-input" id="offering-person" name="person" type="text" maxlength="60" autocomplete="off" placeholder="Escribe el nombre para la ofrenda" required>
+        <label class="offering-field" for="offering-note">Dedicatoria para esta canción</label>
+        <textarea class="offering-note" id="offering-note" name="dedication" maxlength="140" rows="2" placeholder="Escribe unas palabras para recordarle" required></textarea>
+        <div class="offering-actions">
+          <button class="button button-primary offering-submit" type="submit">Añadir dedicatoria de esta canción</button>
+          <button class="button button-secondary offering-clear" type="button" data-clear-offerings>Vaciar ofrenda</button>
+        </div>
+        <p class="offering-status" data-offering-status aria-live="polite"></p>
+      </form>
+      <div class="virtual-altar-items" data-altar-items aria-live="polite"></div>
+    </details>`;
+
+  const journeyNav = document.querySelector(".journey-nav");
+  if (journeyNav) {
+    journeyNav.insertAdjacentElement("beforebegin", activity);
+  }
+
+  const offeringForm = activity.querySelector("[data-offering-form]");
+  const personInput = activity.querySelector("#offering-person");
+  const dedicationInput = activity.querySelector("#offering-note");
+  const offeringStatus = activity.querySelector("[data-offering-status]");
+  const altarItems = activity.querySelector("[data-altar-items]");
+  const altarCount = activity.querySelector("[data-altar-count]");
+  const altarProgress = activity.querySelector("[data-altar-progress]");
+  const altarProgressLabel = activity.querySelector("[data-altar-progress-label]");
+  const offeringSubmit = activity.querySelector(".offering-submit");
+  const offeringClear = activity.querySelector("[data-clear-offerings]");
+  const offeringTitles = { flower: "Flor", candle: "Veladora", memory: "Recuerdo" };
+  let selectedOffering = "flower";
+  let offerings = [];
+  let sharedMemorialName = "";
+
+  try {
+    const savedOfferings = JSON.parse(sessionStorage.getItem(offeringsStorageKey) || "[]");
+    sharedMemorialName = sessionStorage.getItem(memorialNameStorageKey) || "";
+    const seenSongs = new Set();
+    offerings = Array.isArray(savedOfferings)
+      ? savedOfferings.reduce((validOfferings, offering) => {
+          const song = offering && journeySongs.find(
+            (item) => item.file === offering.songFile || item.title === offering.song
+          );
+          if (
+            !offering ||
+            !song ||
+            !Object.prototype.hasOwnProperty.call(offeringTitles, offering.type) ||
+            seenSongs.has(song.file)
+          ) {
+            return validOfferings;
+          }
+
+          seenSongs.add(song.file);
+          validOfferings.push({
+            songFile: song.file,
+            song: song.title,
+            type: offering.type,
+            title: offeringTitles[offering.type],
+            personName: typeof offering.personName === "string" ? offering.personName.slice(0, 60) : "",
+            dedication: typeof offering.dedication === "string" ? offering.dedication.slice(0, 140) : ""
+          });
+          return validOfferings;
+        }, [])
+      : [];
+    if (!sharedMemorialName) {
+      sharedMemorialName = offerings.find((offering) => offering.personName)?.personName || "";
+    }
+    if (sharedMemorialName) {
+      sessionStorage.setItem(memorialNameStorageKey, sharedMemorialName);
+      offerings = offerings.map((offering) => ({ ...offering, personName: sharedMemorialName }));
+    }
+    sessionStorage.setItem(offeringsStorageKey, JSON.stringify(offerings));
+  } catch {
+    sessionStorage.removeItem(offeringsStorageKey);
+  }
+
+  const renderOfferings = () => {
+    altarItems.replaceChildren();
+    const currentOffering = offerings.find((offering) => offering.songFile === currentSongFile);
+    if (currentOffering) {
+      selectedOffering = currentOffering.type;
+    }
+    personInput.value = sharedMemorialName || currentOffering?.personName || "";
+    dedicationInput.value = currentOffering?.dedication || "";
+    altarCount.textContent = `${offerings.length} de ${journeySongs.length} dedicatorias`;
+    altarProgress.value = offerings.length;
+    altarProgressLabel.textContent =
+      offerings.length === journeySongs.length
+        ? "Tu ofrenda está completa: las 12 canciones tienen una dedicatoria."
+        : `${offerings.length} de ${journeySongs.length} canciones tienen una dedicatoria.`;
+    offeringSubmit.disabled = !currentOffering && offerings.length >= journeySongs.length;
+    offeringSubmit.textContent = currentOffering
+      ? "Guardar dedicatoria de esta canción"
+      : "Añadir dedicatoria de esta canción";
+    offeringClear.disabled = offerings.length === 0;
+    activity.querySelectorAll("[data-offering-item]").forEach((choice) => {
+      choice.disabled = false;
+      choice.setAttribute("aria-pressed", String(choice.dataset.offeringItem === selectedOffering));
+    });
+
+    if (offerings.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "virtual-altar-empty";
+      empty.textContent = "Escribe una dedicatoria para las canciones de Ecos del más allá.";
+      altarItems.append(empty);
+    }
+
+    offerings.forEach((offering) => {
+      const item = document.createElement("article");
+      item.className = "virtual-altar-item";
+      const symbol = document.createElement("span");
+      symbol.className = "virtual-altar-symbol";
+      symbol.setAttribute("aria-hidden", "true");
+      symbol.textContent = offering.type === "candle" ? "🕯" : offering.type === "memory" ? "♡" : "✿";
+      const copy = document.createElement("div");
+      copy.className = "virtual-altar-copy";
+      const title = document.createElement("strong");
+      title.textContent = offering.title;
+      const song = document.createElement("span");
+      song.textContent = offering.song;
+      copy.append(title, song);
+      if (offering.personName) {
+        const person = document.createElement("span");
+        person.dataset.memorialName = "";
+        person.textContent = `En memoria de ${offering.personName}`;
+        copy.append(person);
+      }
+      if (offering.dedication) {
+        const note = document.createElement("p");
+        note.textContent = offering.dedication;
+        copy.append(note);
+      }
+      item.append(symbol, copy);
+      altarItems.append(item);
+    });
+  };
+
+  activity.querySelectorAll("[data-offering-item]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedOffering = button.dataset.offeringItem;
+      activity.querySelectorAll("[data-offering-item]").forEach((choice) => {
+        choice.setAttribute("aria-pressed", String(choice === button));
+      });
+      offeringStatus.textContent = `${button.lastElementChild.textContent} elegido para tu ofrenda.`;
+    });
+  });
+
+  personInput.addEventListener("input", () => {
+    sharedMemorialName = personInput.value.trim();
+    sessionStorage.setItem(memorialNameStorageKey, sharedMemorialName);
+    offerings = offerings.map((offering) => ({ ...offering, personName: sharedMemorialName }));
+    sessionStorage.setItem(offeringsStorageKey, JSON.stringify(offerings));
+    altarItems.querySelectorAll("[data-memorial-name]").forEach((person) => {
+      person.textContent = sharedMemorialName ? `En memoria de ${sharedMemorialName}` : "";
+    });
+  });
+
+  offeringForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    sharedMemorialName = personInput.value.trim();
+    sessionStorage.setItem(memorialNameStorageKey, sharedMemorialName);
+    offerings = offerings.map((offering) => ({ ...offering, personName: sharedMemorialName }));
+    if (offerings.some((offering) => offering.songFile === currentSongFile)) {
+      const currentIndex = offerings.findIndex((offering) => offering.songFile === currentSongFile);
+      offerings[currentIndex] = {
+        ...offerings[currentIndex],
+        type: selectedOffering,
+        title: offeringTitles[selectedOffering],
+        personName: personInput.value.trim(),
+        dedication: dedicationInput.value.trim()
+      };
+      offeringStatus.textContent = `Actualizaste la dedicatoria para ${journeySongs[currentSongIndex].title}.`;
+    } else {
+      offerings.push({
+        songFile: currentSongFile,
+        type: selectedOffering,
+        title: offeringTitles[selectedOffering],
+        song: journeySongs[currentSongIndex].title,
+        personName: personInput.value.trim(),
+        dedication: dedicationInput.value.trim()
+      });
+      offeringStatus.textContent = `Agregaste la dedicatoria de ${journeySongs[currentSongIndex].title} a tu ofrenda.`;
+    }
+    sessionStorage.setItem(offeringsStorageKey, JSON.stringify(offerings));
+    renderOfferings();
+  });
+
+  activity.querySelector("[data-clear-offerings]").addEventListener("click", () => {
+    offerings = [];
+    sessionStorage.removeItem(offeringsStorageKey);
+    offeringStatus.textContent = "Tu ofrenda quedó vacía. Puedes comenzar de nuevo.";
+    renderOfferings();
+  });
+
+  renderOfferings();
+}
