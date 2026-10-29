@@ -24,11 +24,6 @@ const getPendingSongUrl = () => {
 };
 
 const redirectCoverToPendingSong = (coverLink) => {
-  const launchCurtain = document.querySelector("[data-launch-curtain]");
-  if (launchCurtain && !launchCurtain.hidden) {
-    return false;
-  }
-
   const destination = getPendingSongUrl();
   sessionStorage.removeItem(pendingSongKey);
   if (!destination) {
@@ -43,7 +38,6 @@ const redirectCoverToPendingSong = (coverLink) => {
 if (coverLink) {
   const audio = document.querySelector(".cover-audio");
   const status = document.querySelector("[data-cover-audio-status]");
-  const launchCurtain = document.querySelector("[data-launch-curtain]");
   const authorizationRequested =
     new URLSearchParams(window.location.search).get("audio") === "authorize";
   const gate = document.createElement("dialog");
@@ -55,7 +49,7 @@ if (coverLink) {
       <p class="eyebrow">Una ofrenda sonora</p>
       <h2 id="audio-gate-title">¿Quieres escuchar el recorrido?</h2>
       <p id="audio-gate-description" class="audio-gate-description">
-        Activa la música para escuchar el tema de la portada mientras esperas y las canciones del recorrido.
+        Activa la música para escuchar el tema de la portada y las canciones del recorrido.
         Esta elección se guardará y no volveremos a mostrar este aviso.
       </p>
       <p class="audio-gate-status" data-gate-audio-status aria-live="polite"></p>
