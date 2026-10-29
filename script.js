@@ -405,7 +405,8 @@ const journeySongs = [
   { file: "dios-nunca-muere.html", title: "Dios nunca muere", artist: "Lila Downs", cover: "dios-nunca-muere.png" },
   { file: "esperame-en-el-cielo.html", title: "Espérame en el cielo", artist: "Los Panchos", cover: "esperame-en-el-cielo.png" }
 ];
-const currentSongFile = window.location.pathname.split("/").pop();
+const currentSongPath = window.location.pathname.replace(/\/+$/, "").split("/").pop() || "";
+const currentSongFile = `${currentSongPath.replace(/\.html$/i, "")}.html`;
 const currentSongIndex = journeySongs.findIndex((song) => song.file === currentSongFile);
 
 if (document.body.classList.contains("song-page") && currentSongIndex !== -1) {
