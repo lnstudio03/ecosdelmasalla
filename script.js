@@ -2,6 +2,73 @@ const preferenceKey = "ecos-del-mas-alla-audio";
 const pendingSongKey = "ecos-del-mas-alla-audio-return";
 const authorizationAttemptKey = "ecos-del-mas-alla-audio-authorization-attempt";
 const coverLink = document.querySelector(".cover-cta[href]");
+const audioToggle = document.createElement("button");
+audioToggle.className = "audio-toggle";
+audioToggle.type = "button";
+audioToggle.setAttribute("aria-pressed", "false");
+document.body.append(audioToggle);
+
+const updateAudioToggle = () => {
+  const isEnabled = localStorage.getItem(preferenceKey) === "enabled";
+  audioToggle.textContent = isEnabled ? "♪ Silenciar sonido" : "♪ Activar sonido";
+  audioToggle.setAttribute("aria-label", isEnabled ? "Silenciar sonido" : "Activar sonido");
+  audioToggle.setAttribute("aria-pressed", String(isEnabled));
+};
+
+updateAudioToggle();
+
+audioToggle.addEventListener("click", async () => {
+  const audios = [...document.querySelectorAll("audio")];
+  if (localStorage.getItem(preferenceKey) === "enabled") {
+    localStorage.setItem(preferenceKey, "muted");
+    audios.forEach((audio) => audio.pause());
+    updateAudioToggle();
+    return;
+  }
+
+  localStorage.setItem(preferenceKey, "enabled");
+  updateAudioToggle();
+
+  const results = await Promise.all(
+    audios.map(async (audio) => {
+      try {
+        if (audio.ended) {
+          audio.currentTime = 0;
+        }
+        audio.muted = false;
+        if (audio.volume === 0) {
+          audio.volume = 1;
+        }
+        await audio.play();
+        return true;
+      } catch {
+        const status =
+          audio.classList.contains("cover-audio")
+            ? document.querySelector("[data-cover-audio-status]")
+            : audio.classList.contains("song-audio")
+              ? audio.closest(".audio-panel")?.querySelector(".audio-status")
+              : document.querySelector("#recognition-audio-status");
+        if (status) {
+          status.textContent = "No se pudo iniciar el sonido. Comprueba los permisos del navegador e inténtalo de nuevo.";
+          status.hidden = false;
+        }
+        return false;
+      }
+    })
+  );
+
+  if (coverLink && results.some(Boolean)) {
+    const gate = document.querySelector(".audio-gate");
+    if (gate?.open) {
+      gate.close();
+    }
+    if (redirectCoverToPendingSong(coverLink)) {
+      const status = document.querySelector("[data-cover-audio-status]");
+      status.textContent = "La música está activa. Continúa el recorrido cuando quieras.";
+      status.hidden = false;
+    }
+  }
+});
 
 const getPendingSongUrl = () => {
   const pendingUrl = sessionStorage.getItem(pendingSongKey);
@@ -103,6 +170,7 @@ if (coverLink) {
       await audio.play();
       coverHasPlayed = true;
       localStorage.setItem(preferenceKey, "enabled");
+      updateAudioToggle();
       gate.close();
       if (redirectCoverToPendingSong(coverLink)) {
         status.textContent = "La música está activa. Continúa el recorrido cuando quieras.";
@@ -146,6 +214,7 @@ if (coverLink) {
 
   skipAudio.addEventListener("click", () => {
     localStorage.setItem(preferenceKey, "muted");
+    updateAudioToggle();
     audio.pause();
     gate.close();
     sessionStorage.removeItem(authorizationAttemptKey);
@@ -204,7 +273,12 @@ document.querySelectorAll(".song-audio").forEach((audio) => {
 
   const silenceStatus = silenceDialog.querySelector("[data-song-silence-status]");
   const showSilenceDialog = () => {
-    if (silenceDialogOpen || !hasPlayed || loadFailed) {
+    if (
+      silenceDialogOpen ||
+      !hasPlayed ||
+      loadFailed ||
+      localStorage.getItem(preferenceKey) !== "enabled"
+    ) {
       return;
     }
 
