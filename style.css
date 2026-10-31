@@ -73,16 +73,6 @@ a {
   isolation: isolate;
 }
 
-.cover-credit {
-  position: absolute;
-  right: clamp(1rem, 4vw, 2.5rem);
-  bottom: 0.6rem;
-  margin: 0;
-  color: rgba(255, 244, 223, 0.58);
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-}
-
 .cover-atmosphere {
   position: fixed;
   z-index: 0;
@@ -435,6 +425,7 @@ a {
 }
 
 .wordmark {
+  display: block;
   color: var(--gold-soft);
   font-family: var(--serif);
   font-size: 1.45rem;
@@ -979,6 +970,7 @@ a {
 .song-page.is-intro .site-header,
 .song-page.is-intro .song-layout > :not(.art-slot),
 .song-page.is-intro .site-footer,
+.song-page.is-intro .studio-signature,
 .song-page.is-intro .skip-link {
   visibility: hidden;
 }
@@ -1023,7 +1015,8 @@ a {
 
 .song-page.is-revealing .site-header,
 .song-page.is-revealing .song-layout > :not(.art-slot),
-.song-page.is-revealing .site-footer {
+.song-page.is-revealing .site-footer,
+.song-page.is-revealing .studio-signature {
   animation: song-content-reveal 600ms ease-out both;
 }
 
@@ -1384,6 +1377,43 @@ a {
   padding: 0.5rem 0 1rem;
   color: rgba(255, 244, 223, 0.55);
   font-size: 0.72rem;
+  text-align: center;
+}
+
+.studio-signature {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  padding: 0.8rem 0 1.25rem;
+  border-top: 1px solid rgba(240, 217, 139, 0.2);
+  color: rgba(240, 217, 139, 0.72);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.cover-author {
+  position: absolute;
+  left: max(1rem, env(safe-area-inset-left));
+  bottom: max(0.25rem, env(safe-area-inset-bottom));
+  margin: 0;
+  padding: 0.5rem 0;
+  color: rgba(255, 244, 223, 0.48);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-align: left;
+}
+
+.cover-studio-signature {
+  position: absolute;
+  right: 1rem;
+  bottom: max(0.25rem, env(safe-area-inset-bottom));
+  left: 1rem;
+  width: auto;
+  margin: 0;
+  padding: 0.5rem 0;
+  border-top: 0;
+  font-size: 0.58rem;
   text-align: center;
 }
 
