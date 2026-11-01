@@ -44,6 +44,10 @@
       <span class="drifting-petal petal-four"></span>
     </div>
     <section class="cover-content" aria-labelledby="cover-title">
+      <div class="cover-brand" aria-label="LNL Studio presenta">
+        <span class="cover-brand-mark">LNL</span>
+        <span class="cover-brand-name">STUDIO <i>presenta</i></span>
+      </div>
       <!-- NOTA DE EDICIÓN: Reemplaza este SVG por tu adorno de papel picado en SVG o PNG transparente. -->
       <div class="papel-picado" aria-hidden="true">
         <svg viewBox="0 0 640 82" role="img">
@@ -60,24 +64,31 @@
           <path d="M25 57h46m44 0h46m44 0h46m44 0h46m44 0h46m44 0h46m44 0h46" fill="none" stroke="#f5d98b" stroke-width="2"/>
         </svg>
       </div>
-      <p class="eyebrow">Ecos del más allá para recordar</p>
-      <svg class="arched-title" viewBox="0 0 700 180" role="img" aria-label="Ecos del más allá">
-        <defs>
-          <path id="title-arc" d="M 48,145 Q 350,-20 652,145"></path>
-        </defs>
-        <text>
-          <textPath href="#title-arc" startOffset="50%" text-anchor="middle">Ecos del más allá</textPath>
-        </text>
-      </svg>
-      <h1 class="cover-title-fallback" id="cover-title">Ecos del más allá</h1>
-      <p class="cover-subtitle">Cada canción guarda una historia que merece ser conocida.</p>
-      <p class="cover-intro">Recorre 12 canciones y descubre las memorias, leyendas y tradiciones que viven detrás de ellas. Tómate un momento para leer: comprender la historia puede cambiar la forma en que la escuchas.</p>
-      <!-- NOTA DE CONEXIÓN: Este botón redirige a la página de la primera canción (coco.html). -->
-      <a class="button button-primary cover-cta" href="coco.html">
-        Descubre la primera historia <span aria-hidden="true">→</span>
-      </a>
-      <p class="cover-footnote">Puedes recorrer las historias con o sin sonido.
-      </p>
+      <div class="cover-main">
+        <div class="cover-copy">
+          <p class="eyebrow">Una experiencia musical para recordar</p>
+          <h1 class="cover-title" id="cover-title"><span>Ecos del</span><strong>más allá</strong></h1>
+          <p class="cover-subtitle">Donde la música mantiene vivos los recuerdos.</p>
+          <p class="cover-intro">Un recorrido digital por 12 canciones, leyendas y tradiciones del Día de Muertos. Descubre las historias que viven detrás de cada melodía.</p>
+          <ul class="cover-pillars" aria-label="Lo que encontrarás">
+            <li><span aria-hidden="true">♫</span> Escucha</li>
+            <li><span aria-hidden="true">✦</span> Descubre</li>
+            <li><span aria-hidden="true">♥</span> Recuerda</li>
+          </ul>
+          <!-- NOTA DE CONEXIÓN: Este botón redirige a la página de la primera canción (coco.html). -->
+          <a class="button button-primary cover-cta" href="coco.html">
+            Comienza tu recorrido <span aria-hidden="true">→</span>
+          </a>
+          <p class="cover-footnote">Puedes recorrer las historias con o sin sonido.</p>
+        </div>
+        <figure class="cover-art" data-cover-carousel>
+          <img src="el-coco.jpg" alt="Portada de El Coco, interpretada por Los Folkloristas">
+          <figcaption>
+            <span class="cover-art-title" data-cover-title>El Coco</span>
+            <span class="cover-art-artist" data-cover-artist>Los Folkloristas</span>
+          </figcaption>
+        </figure>
+      </div>
       <p class="cover-audio-status" data-cover-audio-status aria-live="polite" hidden></p>
       <!-- NOTA DE EDICIÓN: Puedes sustituir esta guirnalda SVG por una tira PNG transparente de flores de cempasúchil. -->
       <div class="marigold-garland" aria-hidden="true">

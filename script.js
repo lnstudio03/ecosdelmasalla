@@ -479,6 +479,56 @@ const journeySongs = [
   { file: "dios-nunca-muere.html", title: "Dios nunca muere", artist: "Lila Downs", cover: "dios-nunca-muere.png" },
   { file: "esperame-en-el-cielo.html", title: "Espérame en el cielo", artist: "Los Panchos", cover: "esperame-en-el-cielo.png" }
 ];
+
+const coverCarousel = document.querySelector("[data-cover-carousel]");
+if (coverCarousel && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  const coverImage = coverCarousel.querySelector("img");
+  const coverTitle = coverCarousel.querySelector("[data-cover-title]");
+  const coverArtist = coverCarousel.querySelector("[data-cover-artist]");
+  let currentCoverIndex = 0;
+  let carouselTimer = 0;
+
+  const stopCoverCarousel = () => {
+    window.clearInterval(carouselTimer);
+    carouselTimer = 0;
+  };
+
+  const showNextCover = () => {
+    currentCoverIndex = (currentCoverIndex + 1) % journeySongs.length;
+    const song = journeySongs[currentCoverIndex];
+    const preload = new Image();
+    preload.src = song.cover;
+
+    coverCarousel.classList.add("is-changing");
+    window.setTimeout(() => {
+      coverImage.src = song.cover;
+      coverImage.alt = `Portada de ${song.title}, interpretada por ${song.artist}`;
+      coverTitle.textContent = song.title;
+      coverArtist.textContent = song.artist;
+      window.requestAnimationFrame(() => coverCarousel.classList.remove("is-changing"));
+    }, 220);
+  };
+
+  const startCoverCarousel = () => {
+    if (!document.hidden && !carouselTimer) {
+      carouselTimer = window.setInterval(showNextCover, 5000);
+    }
+  };
+
+  coverCarousel.addEventListener("mouseenter", stopCoverCarousel);
+  coverCarousel.addEventListener("mouseleave", startCoverCarousel);
+  coverCarousel.addEventListener("focusin", stopCoverCarousel);
+  coverCarousel.addEventListener("focusout", startCoverCarousel);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopCoverCarousel();
+    } else {
+      startCoverCarousel();
+    }
+  });
+  startCoverCarousel();
+}
+
 const currentSongPath = window.location.pathname.replace(/\/+$/, "").split("/").pop() || "";
 const currentSongFile = `${currentSongPath.replace(/\.html$/i, "")}.html`;
 const currentSongIndex = journeySongs.findIndex((song) => song.file === currentSongFile);
