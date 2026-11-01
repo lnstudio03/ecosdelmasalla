@@ -62,6 +62,23 @@ const songCoverImages = Promise.all(
   )
 );
 
+const decorativeArtImages = Promise.all(
+  [
+    ["catrinaIcon", "icono-catrina.png"],
+    ["catrinIcon", "icono-catrin.png"],
+    ["catrinaFigure", "catrina-1.png"],
+    ["catrinFigure", "catrin-1.png"]
+  ].map(
+    ([name, source]) =>
+      new Promise((resolve) => {
+        const image = new Image();
+        image.onload = () => resolve([name, image]);
+        image.onerror = () => resolve([name, null]);
+        image.src = new URL(source, document.baseURI).href;
+      })
+  )
+);
+
 const drawMarigold = (ctx, x, y, radius, theme) => {
   ctx.save();
   ctx.translate(x, y);
@@ -76,6 +93,124 @@ const drawMarigold = (ctx, x, y, radius, theme) => {
   ctx.arc(0, 0, radius * 0.2, 0, Math.PI * 2);
   ctx.fillStyle = theme.center;
   ctx.fill();
+  ctx.restore();
+};
+
+const drawSugarSkull = (ctx, x, y, radius, theme) => {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(radius / 50, radius / 50);
+  ctx.lineWidth = 2.5;
+  ctx.fillStyle = theme.text;
+  ctx.strokeStyle = theme.accent;
+  ctx.beginPath();
+  ctx.moveTo(-34, -22);
+  ctx.bezierCurveTo(-31, -45, 31, -45, 34, -22);
+  ctx.lineTo(30, 11);
+  ctx.bezierCurveTo(25, 30, 13, 37, 0, 37);
+  ctx.bezierCurveTo(-13, 37, -25, 30, -30, 11);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  [-16, 16].forEach((eyeX) => {
+    ctx.beginPath();
+    ctx.arc(eyeX, -7, 9, 0, Math.PI * 2);
+    ctx.fillStyle = theme.background[1];
+    ctx.fill();
+    ctx.strokeStyle = theme.petals[0];
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(eyeX, -7, 3, 0, Math.PI * 2);
+    ctx.fillStyle = theme.accent;
+    ctx.fill();
+  });
+
+  ctx.beginPath();
+  ctx.moveTo(0, 4);
+  ctx.lineTo(-5, 12);
+  ctx.lineTo(5, 12);
+  ctx.closePath();
+  ctx.fillStyle = theme.petals[0];
+  ctx.fill();
+  ctx.strokeStyle = theme.accent;
+  ctx.stroke();
+
+  ctx.strokeStyle = theme.accent;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(-14, 23);
+  ctx.lineTo(14, 23);
+  ctx.moveTo(-8, 21);
+  ctx.lineTo(-8, 30);
+  ctx.moveTo(0, 21);
+  ctx.lineTo(0, 32);
+  ctx.moveTo(8, 21);
+  ctx.lineTo(8, 30);
+  ctx.stroke();
+
+  drawMarigold(ctx, 0, -31, 8, theme);
+  ctx.restore();
+};
+
+const drawCatrina = (ctx, x, y, scale, theme, mirrored = false) => {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(mirrored ? -scale : scale, scale);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = theme.accent;
+  ctx.fillStyle = theme.background[1];
+
+  ctx.beginPath();
+  ctx.ellipse(0, -75, 43, 7, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(-27, -79);
+  ctx.lineTo(-20, -106);
+  ctx.lineTo(20, -106);
+  ctx.lineTo(27, -79);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = theme.text;
+  ctx.beginPath();
+  ctx.ellipse(0, -48, 20, 28, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = theme.background[1];
+  [-8, 8].forEach((eyeX) => {
+    ctx.beginPath();
+    ctx.arc(eyeX, -52, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.beginPath();
+  ctx.moveTo(0, -48);
+  ctx.lineTo(-3, -41);
+  ctx.lineTo(3, -41);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = theme.background[1];
+  ctx.beginPath();
+  ctx.moveTo(-20, -28);
+  ctx.quadraticCurveTo(-33, 5, -46, 13);
+  ctx.quadraticCurveTo(0, 31, 46, 13);
+  ctx.quadraticCurveTo(33, 5, 20, -28);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(-29, -70);
+  ctx.quadraticCurveTo(-47, -38, -27, -20);
+  ctx.moveTo(29, -70);
+  ctx.quadraticCurveTo(47, -38, 27, -20);
+  ctx.stroke();
+  drawMarigold(ctx, -17, -80, 8, theme);
+  drawMarigold(ctx, 0, -86, 10, theme);
+  drawMarigold(ctx, 17, -80, 8, theme);
   ctx.restore();
 };
 
@@ -139,9 +274,10 @@ const drawCenteredWrappedText = (ctx, text, x, y, maxWidth, lineHeight, maxLines
   });
 };
 
-const drawCertificate = (name) => {
+const drawCertificate = async (name) => {
   const { width, height } = canvas;
   const theme = themes[themeInput.value] || themes.noche;
+  const decorativeArt = new Map(await decorativeArtImages);
   const gradient = context.createLinearGradient(0, 0, width, height);
   theme.background.forEach((color, index) => {
     gradient.addColorStop(index / (theme.background.length - 1), color);
@@ -149,61 +285,162 @@ const drawCertificate = (name) => {
   context.fillStyle = gradient;
   context.fillRect(0, 0, width, height);
 
-  context.strokeStyle = theme.border;
-  context.lineWidth = 8;
-  context.strokeRect(44, 44, width - 88, height - 88);
-  context.strokeStyle = theme.innerBorder;
-  context.lineWidth = 2;
-  context.strokeRect(66, 66, width - 132, height - 132);
+  const ambientGlow = context.createRadialGradient(width / 2, 490, 60, width / 2, 490, 760);
+  ambientGlow.addColorStop(0, "rgba(240, 166, 46, 0.13)");
+  ambientGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
+  context.fillStyle = ambientGlow;
+  context.fillRect(0, 0, width, height);
 
-  drawMarigold(context, 132, 132, 54, theme);
-  drawMarigold(context, width - 132, 132, 54, theme);
-  drawMarigold(context, 132, height - 132, 54, theme);
-  drawMarigold(context, width - 132, height - 132, 54, theme);
+  context.fillStyle = "rgba(255, 244, 223, 0.18)";
+  [
+    [300, 270], [1290, 270], [235, 710], [1360, 710],
+    [410, 910], [1180, 910], [800, 230], [800, 930]
+  ].forEach(([x, y]) => {
+    context.beginPath();
+    context.arc(x, y, 2.5, 0, Math.PI * 2);
+    context.fill();
+  });
+
+  context.strokeStyle = theme.border;
+  context.lineWidth = 5;
+  context.strokeRect(38, 38, width - 76, height - 76);
+  context.strokeStyle = theme.innerBorder;
+  context.lineWidth = 1.5;
+  context.strokeRect(54, 54, width - 108, height - 108);
+
+  const cornerSize = 72;
+  context.strokeStyle = theme.accent;
+  context.lineWidth = 2;
+  [
+    [82, 82, 1, 1],
+    [width - 82, 82, -1, 1],
+    [82, height - 82, 1, -1],
+    [width - 82, height - 82, -1, -1]
+  ].forEach(([x, y, directionX, directionY]) => {
+    context.beginPath();
+    context.moveTo(x, y + directionY * cornerSize);
+    context.lineTo(x, y);
+    context.lineTo(x + directionX * cornerSize, y);
+    context.stroke();
+  });
+
+  drawMarigold(context, 120, 120, 36, theme);
+  drawMarigold(context, width - 120, 120, 36, theme);
+  drawMarigold(context, 120, height - 120, 36, theme);
+  drawMarigold(context, width - 120, height - 120, 36, theme);
+
+  const illustrationPlacements = [
+    ["catrinaIcon", 54, 238, 150, 150],
+    ["catrinIcon", width - 204, 235, 150, 190],
+    ["catrinaFigure", 30, 750, 190, 165],
+    ["catrinFigure", width - 205, 740, 175, 225]
+  ];
+  illustrationPlacements.forEach(([name, x, y, imageWidth, imageHeight]) => {
+    const image = decorativeArt.get(name);
+    if (image) {
+      const scale = Math.min(imageWidth / image.naturalWidth, imageHeight / image.naturalHeight);
+      const fittedWidth = image.naturalWidth * scale;
+      const fittedHeight = image.naturalHeight * scale;
+      context.drawImage(
+        image,
+        x + (imageWidth - fittedWidth) / 2,
+        y + (imageHeight - fittedHeight) / 2,
+        fittedWidth,
+        fittedHeight
+      );
+    } else if (name === "catrinaIcon") {
+      drawSugarSkull(context, x + imageWidth / 2, y + imageHeight / 2, 46, theme);
+    } else if (name === "catrinIcon") {
+      drawSugarSkull(context, x + imageWidth / 2, y + imageHeight / 2, 46, theme);
+    } else {
+      drawCatrina(
+        context,
+        x + imageWidth / 2,
+        y + imageHeight - 8,
+        0.78,
+        theme,
+        name === "catrinFigure"
+      );
+    }
+  });
 
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.fillStyle = theme.accent;
   context.font = '700 36px "Lora", Georgia, serif';
   context.letterSpacing = "5px";
-  context.fillText("ECOS DEL MÁS ALLÁ", width / 2, 175);
+  context.fillText("ECOS DEL MÁS ALLÁ", width / 2, 135);
+
+  context.strokeStyle = theme.innerBorder;
+  context.lineWidth = 1;
+  context.beginPath();
+  context.moveTo(500, 180);
+  context.lineTo(720, 180);
+  context.moveTo(880, 180);
+  context.lineTo(1100, 180);
+  context.stroke();
+  drawMarigold(context, width / 2, 180, 13, theme);
 
   context.fillStyle = theme.text;
-  context.font = '600 72px "Cinzel", "Palatino Linotype", Georgia, serif';
-  context.fillText("RECONOCIMIENTO", width / 2, 300, width - 300);
+  context.font = '600 76px "Cinzel", "Palatino Linotype", Georgia, serif';
+  context.fillText("RECONOCIMIENTO", width / 2, 280, 1050);
+  context.fillStyle = theme.accent;
+  context.font = '500 25px "Lora", Georgia, serif';
+  context.letterSpacing = "6px";
+  context.fillText("DE FINALIZACIÓN", width / 2, 335);
 
   context.fillStyle = theme.muted;
   context.font = '400 30px "Lora", Georgia, serif';
   context.letterSpacing = "0px";
-  context.fillText("Se otorga el presente reconocimiento a", width / 2, 420, width - 300);
+  context.fillText("Se otorga el presente reconocimiento a", width / 2, 420, 1000);
 
   fitNameFont(context, name, width - 320);
   context.fillStyle = theme.accent;
-  context.fillText(name, width / 2, 525, width - 320);
+  context.fillText(name, width / 2, 510, 1040);
+  context.strokeStyle = theme.innerBorder;
+  context.lineWidth = 1;
+  context.beginPath();
+  context.moveTo(480, 570);
+  context.lineTo(1120, 570);
+  context.stroke();
+  drawMarigold(context, width / 2, 570, 11, theme);
 
   context.fillStyle = theme.muted;
-  context.font = '600 27px "Lora", Georgia, serif';
-  context.fillText("POR HABER CONCLUIDO EL RECORRIDO DE", width / 2, 645, width - 300);
+  context.font = '600 24px "Lora", Georgia, serif';
+  context.letterSpacing = "2px";
+  context.fillText("POR HABER CONCLUIDO EL RECORRIDO DE", width / 2, 640, 1000);
 
   context.fillStyle = theme.accent;
-  context.font = '600 52px "Cinzel", "Palatino Linotype", Georgia, serif';
-  context.fillText("ECOS DEL MÁS ALLÁ", width / 2, 715);
+  context.font = '600 48px "Cinzel", "Palatino Linotype", Georgia, serif';
+  context.letterSpacing = "0px";
+  context.fillText("ECOS DEL MÁS ALLÁ", width / 2, 700, 1000);
 
   context.fillStyle = theme.text;
-  context.font = '400 28px "Lora", Georgia, serif';
+  context.font = '400 24px "Lora", Georgia, serif';
   drawCenteredWrappedText(
     context,
     "Una experiencia de música, memoria y tradición dedicada a honrar a quienes permanecen en nuestros corazones.",
     width / 2,
-    800,
-    width - 340,
-    38,
+    770,
+    820,
+    32,
     2
   );
 
   context.fillStyle = theme.accent;
-  context.font = '600 28px "Cinzel", "Palatino Linotype", Georgia, serif';
-  context.fillText("DÍA DE MUERTOS · 2026", width / 2, 965);
+  context.font = '600 25px "Cinzel", "Palatino Linotype", Georgia, serif';
+  context.fillText("DÍA DE MUERTOS · 2026", width / 2, 880);
+
+  context.strokeStyle = theme.innerBorder;
+  context.lineWidth = 1;
+  context.beginPath();
+  context.moveTo(650, 935);
+  context.lineTo(950, 935);
+  context.stroke();
+  context.fillStyle = theme.muted;
+  context.font = '600 17px "Lora", Georgia, serif';
+  context.letterSpacing = "4px";
+  context.fillText("LN STUDIO", width / 2, 970);
 };
 
 const readOfferings = () => {
@@ -212,7 +449,23 @@ const readOfferings = () => {
     if (!Array.isArray(saved)) {
       throw new Error("Las dedicatorias guardadas no tienen el formato esperado.");
     }
-    return saved;
+    const seenSongs = new Set();
+    const seenTypes = new Set();
+    return saved.filter((offering) => {
+      const valid =
+        offering &&
+        journeySongs.some((song) => song.file === offering.songFile) &&
+        offeringItems.some((item) => item.type === offering.type) &&
+        typeof offering.dedication === "string" &&
+        offering.dedication.trim() &&
+        !seenSongs.has(offering.songFile) &&
+        !seenTypes.has(offering.type);
+      if (valid) {
+        seenSongs.add(offering.songFile);
+        seenTypes.add(offering.type);
+      }
+      return valid;
+    });
   } catch {
     altarStatus.textContent = "No se pudieron leer todas las dedicatorias guardadas. La imagen conserva las 12 canciones del recorrido.";
     return [];
@@ -230,6 +483,7 @@ try {
   if (offeringNameInput.value) {
     sessionStorage.setItem(memorialNameStorageKey, offeringNameInput.value);
   }
+  offeringNameInput.readOnly = Boolean(offeringNameInput.value);
 } catch {
   status.textContent = "No se pudieron recuperar los nombres guardados.";
 }
@@ -250,11 +504,12 @@ const drawOfferingIcon = (ctx, type, x, y, theme) => {
     ctx.restore();
     return;
   }
+  const symbol = offeringItems.find((item) => item.type === type)?.symbol || "✧";
   ctx.fillStyle = theme.accent;
-  ctx.font = '400 46px Georgia, serif';
+  ctx.font = '400 42px "Lora", Georgia, serif';
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("♡", x, y);
+  ctx.fillText(symbol, x, y);
 };
 
 const drawAltarPlatform = (ctx, x, y, width, theme) => {
@@ -477,7 +732,11 @@ const drawDigitalAltar = async () => {
     drawMarigold(altarContext, flowerX, 1170, 16, theme);
   }
 
-  altarProgress.textContent = "Tu ofrenda está lista.";
+  const offeringCount = offeringsBySong.size;
+  altarProgress.textContent =
+    offeringCount === journeySongs.length
+      ? "Las 12 canciones tienen una dedicatoria para la misma persona."
+      : `${offeringCount} de ${journeySongs.length} dedicatorias completas. Continúa el recorrido para terminar la ofrenda.`;
 };
 
 const updatePreview = async () => {
@@ -486,11 +745,12 @@ const updatePreview = async () => {
   await drawDigitalAltar();
   const name = nameInput.value.trim();
   const offeringName = offeringNameInput.value.trim();
-  offeringDownloadButton.disabled = !offeringName || !altarContext;
+  offeringDownloadButton.disabled =
+    !offeringName || !altarContext;
   if (!name || !context) {
     preview.hidden = true;
   } else {
-    drawCertificate(name);
+    await drawCertificate(name);
     canvas.setAttribute("aria-label", `Vista previa del reconocimiento para ${name}`);
     preview.hidden = false;
   }
@@ -533,7 +793,7 @@ const downloadCanvas = (targetCanvas, filename) => {
   window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
 };
 
-const downloadRecognition = () => {
+const downloadRecognition = async () => {
   if (!form.reportValidity()) {
     return;
   }
@@ -542,7 +802,7 @@ const downloadRecognition = () => {
     return;
   }
   try {
-    drawCertificate(nameInput.value.trim());
+    await drawCertificate(nameInput.value.trim());
     downloadCanvas(
       canvas,
       `reconocimiento-${safeFilename(nameInput.value.trim(), "participante")}.png`
@@ -584,8 +844,20 @@ nameInput.addEventListener("input", () => {
 });
 
 offeringNameInput.addEventListener("input", () => {
+  updatePreview();
+});
+
+offeringNameInput.addEventListener("change", () => {
   try {
-    sessionStorage.setItem(memorialNameStorageKey, offeringNameInput.value.trim());
+    const savedName = sessionStorage.getItem(memorialNameStorageKey) || "";
+    if (savedName && savedName !== offeringNameInput.value.trim()) {
+      offeringNameInput.value = savedName;
+      altarStatus.textContent = "Las 12 dedicatorias deben conservar el mismo nombre.";
+    } else if (offeringNameInput.value.trim()) {
+      offeringNameInput.value = offeringNameInput.value.trim();
+      sessionStorage.setItem(memorialNameStorageKey, offeringNameInput.value);
+      offeringNameInput.readOnly = true;
+    }
   } catch {
     altarStatus.textContent = "No se pudo guardar el nombre de la ofrenda.";
   }

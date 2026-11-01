@@ -700,7 +700,7 @@ a {
 
 .offering-choices {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.65rem;
 }
 
@@ -759,6 +759,20 @@ a {
   font-size: 1.35rem;
 }
 
+.offering-choice small {
+  min-height: 1em;
+  color: var(--gold-soft);
+  font-size: 0.62rem;
+  line-height: 1.2;
+}
+
+.offering-name-hint {
+  margin: -0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
 .offering-choice:hover,
 .offering-choice:focus-visible,
 .offering-choice[aria-pressed="true"] {
@@ -775,11 +789,16 @@ a {
 
 .offering-choice:disabled {
   cursor: default;
-  opacity: 0.68;
+  opacity: 0.45;
 }
 
 .offering-choice:disabled[aria-pressed="true"] {
   opacity: 1;
+}
+
+.offering-input:read-only {
+  border-color: rgba(212, 175, 55, 0.28);
+  color: var(--gold-soft);
 }
 
 .offering-actions {
@@ -1752,7 +1771,7 @@ a {
     transform: translate3d(0, 0, 0) rotate(0deg);
   }
   18% {
-    opacity: 0.58;
+    opacity: 0.34;
   }
   78% {
     opacity: 0.42;
@@ -3002,6 +3021,10 @@ body {
     white-space: normal;
   }
 
+  .offering-choices {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .song-layout {
     grid-template-columns: minmax(0, 1fr);
     gap: 0.85rem;
@@ -3306,5 +3329,246 @@ body {
   .journey-map,
   .participation-panel {
     transition: none;
+  }
+}
+
+.cover-page {
+  position: relative;
+}
+
+.cover-page::before,
+.cover-page::after {
+  position: fixed;
+  z-index: 0;
+  top: 50%;
+  width: clamp(7rem, calc((100vw - 1160px) / 2), 12rem);
+  height: min(78vh, 38rem);
+  background-repeat: no-repeat;
+  background-size: min(100%, 6.5rem) auto, 100% auto;
+  content: "";
+  opacity: 0.5;
+  pointer-events: none;
+  transform: translateY(-50%);
+  animation: flower-drift 12s ease-in-out infinite alternate;
+}
+
+.cover-page::before {
+  left: 0;
+  background-image: url("icono-catrina.png"), url("catrina-1.png");
+  background-position: right 0 top 0.75rem, right 0 bottom 0.75rem;
+}
+
+.cover-page::after {
+  right: 0;
+  background-image: url("icono-catrin.png"), url("catrin-1.png");
+  background-position: left 0 top 0.75rem, left 0 bottom 0.75rem;
+  animation-delay: -6s;
+  animation-direction: alternate-reverse;
+}
+
+.cover-page .cover-shell {
+  z-index: 1;
+}
+
+.song-page::before,
+.song-page::after {
+  z-index: 0;
+  width: clamp(7rem, calc((100vw - 1160px) / 2), 12rem);
+  height: min(78vh, 38rem);
+  aspect-ratio: auto;
+  border-radius: 0;
+  background-repeat: no-repeat;
+  background-size: min(100%, 6.5rem) auto, 100% auto;
+  mask-image: none;
+  opacity: 0.45;
+  animation: flower-drift 12s ease-in-out infinite alternate;
+}
+
+.song-page::before {
+  top: 50%;
+  left: 0;
+  background-image: url("icono-catrina.png"), url("catrina-1.png");
+  background-position: right 0 top 0.75rem, right 0 bottom 0.75rem;
+  transform: translateY(-50%);
+}
+
+.song-page::after {
+  top: 50%;
+  right: 0;
+  bottom: auto;
+  background-image: url("icono-catrin.png"), url("catrin-1.png");
+  background-position: left 0 top 0.75rem, left 0 bottom 0.75rem;
+  transform: translateY(-50%) scaleX(-1);
+  animation-delay: -6s;
+  animation-direction: alternate-reverse;
+}
+
+.site-header,
+.song-layout,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.song-page.is-intro::before,
+.song-page.is-intro::after {
+  opacity: 0;
+}
+
+@media (max-width: 760px) {
+  .cover-page::before,
+  .cover-page::after,
+  .song-page::before,
+  .song-page::after {
+    width: 4.5rem;
+    height: min(58vh, 24rem);
+    background-position: right 0 top 0.35rem, right 0 bottom 0.35rem;
+    background-size: min(100%, 3.75rem) auto, 100% auto;
+    opacity: 0.32;
+  }
+
+  .cover-page::before,
+  .song-page::before {
+    background-position: left 0 top 0.35rem, left 0 bottom 0.35rem;
+  }
+
+  .cover-page::after,
+  .song-page::after {
+    background-position: right 0 top 0.35rem, right 0 bottom 0.35rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .cover-page::before,
+  .cover-page::after,
+  .song-page::before,
+  .song-page::after {
+    width: 4.5rem;
+    height: 8rem;
+    top: 6.5rem;
+    opacity: 0.26;
+    background-image: none;
+    transform: translateY(0);
+  }
+
+  .cover-page::before,
+  .song-page::before {
+    left: 0.15rem;
+    background-image: url("icono-catrina.png");
+  }
+
+  .cover-page::after,
+  .song-page::after {
+    right: 0.15rem;
+    background-image: url("icono-catrin.png");
+  }
+}
+
+@media (max-width: 420px) {
+  .cover-page::before,
+  .cover-page::after,
+  .song-page::before,
+  .song-page::after {
+    width: 2.75rem;
+    height: 5rem;
+    top: 5.25rem;
+    opacity: 0.22;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cover-page::before,
+  .cover-page::after,
+  .song-page::before,
+  .song-page::after {
+    animation: none;
+  }
+}
+
+.cover-page::before,
+.cover-page::after {
+  background-image: none;
+  opacity: 0;
+}
+
+.cover-atmosphere .cover-character {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  width: clamp(7rem, 13vw, 11rem);
+  height: auto;
+  object-fit: contain;
+  opacity: 0.48;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5));
+  animation: flower-drift 12s ease-in-out infinite alternate;
+}
+
+.cover-atmosphere .character-catrina-icon {
+  top: 5%;
+  left: 18%;
+}
+
+.cover-atmosphere .character-catrin-icon {
+  top: 6%;
+  right: 18%;
+  width: clamp(10rem, 16vw, 14rem);
+  animation-delay: -5s;
+  animation-direction: alternate-reverse;
+}
+
+.cover-atmosphere .character-catrina,
+.cover-atmosphere .character-catrin {
+  bottom: 1%;
+  width: clamp(11rem, 21vw, 18rem);
+}
+
+.cover-atmosphere .character-catrina {
+  left: 3%;
+  opacity: 0.38;
+  animation-delay: -3s;
+}
+
+.cover-atmosphere .character-catrin {
+  right: 3%;
+  width: clamp(10rem, 19vw, 16rem);
+  animation-delay: -7s;
+  animation-direction: alternate-reverse;
+}
+
+@media (max-width: 760px) {
+  .cover-atmosphere .cover-character {
+    opacity: 0.3;
+  }
+
+  .cover-atmosphere .character-catrina-icon {
+    top: 10%;
+    left: 2%;
+    width: clamp(5rem, 20vw, 8rem);
+  }
+
+  .cover-atmosphere .character-catrin-icon {
+    top: 10%;
+    right: 2%;
+    width: clamp(5rem, 20vw, 8rem);
+  }
+
+  .cover-atmosphere .character-catrina,
+  .cover-atmosphere .character-catrin {
+    bottom: 3%;
+    width: clamp(6rem, 24vw, 9rem);
+  }
+
+  .cover-atmosphere .character-catrina {
+    left: 0;
+  }
+
+  .cover-atmosphere .character-catrin {
+    right: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cover-atmosphere .cover-character {
+    animation: none;
   }
 }
